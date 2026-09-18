@@ -1,14 +1,14 @@
-const c=document.querySelector('#c'),g=c.getContext('2d');let W,H,D,off,og,mask,mm,t=0,px=.5,py=.5,tx=.5,ty=.5,push=0;
-function size(){D=Math.min(devicePixelRatio||1,2);W=c.width=innerWidth*D;H=c.height=innerHeight*D;off=document.createElement('canvas');off.width=W;off.height=H;og=off.getContext('2d');mask=document.createElement('canvas');mask.width=W;mask.height=H;mm=mask.getContext('2d')}
-function path(ctx,x,y,w,h){ctx.save();ctx.translate(x,y);ctx.beginPath();let r=w*.24;ctx.moveTo(-w*.42,-h*.36);ctx.bezierCurveTo(-w*.20,-h*.52,w*.15,-h*.52,w*.31,-h*.36);ctx.bezierCurveTo(w*.47,-h*.18,w*.39,h*.23,w*.22,h*.43);ctx.bezierCurveTo(.05*w,h*.57,-w*.25,h*.52,-w*.36,h*.30);ctx.bezierCurveTo(-w*.48,h*.08,-w*.53,-h*.18,-w*.42,-h*.36);ctx.closePath();ctx.restore()}
-function drawMask(){mm.clearRect(0,0,W,H);let fs=Math.min(W*.55,H*.34);mm.font='900 '+fs+'px Arial Black,Arial';mm.textAlign='center';mm.textBaseline='middle';mm.fillStyle='#000';mm.fillText('117',W*.5,H*.49)}
-function render(){requestAnimationFrame(render);t+=.018;px+=(tx-px)*.08;py+=(ty-py)*.08;push*=.985;drawMask();og.clearRect(0,0,W,H);let grad=og.createLinearGradient(0,H*.25,W,H*.72);grad.addColorStop(0,'#ffd7cf');grad.addColorStop(.35,'#efb1a7');grad.addColorStop(.72,'#d98f86');grad.addColorStop(1,'#bd746d');og.fillStyle=grad;og.fillRect(0,0,W,H);og.globalCompositeOperation='destination-in';og.drawImage(mask,0,0);og.globalCompositeOperation='source-over';
-let img=og.getImageData(0,0,W,H),d=img.data,cx=px*W,cy=py*H;for(let y=0;y<H;y+=2)for(let x=0;x<W;x+=2){let i=(y*W+x)*4;if(!d[i+3])continue;let nx=x/W,ny=y/H;let n=Math.sin(nx*37+t*.7)*Math.sin(ny*31-t*.4)+Math.sin(nx*91+ny*53+t)*.35;let dist=Math.hypot(x-cx,y-cy)/(180*D),dent=Math.max(0,1-dist)*push;let shade=n*5-dent*105;for(let yy=0;yy<2;yy++)for(let xx=0;xx<2;xx++){let j=((y+yy)*W+x+xx)*4;if(j<d.length&&d[j+3]){d[j]=Math.max(0,d[j]+shade);d[j+1]=Math.max(0,d[j+1]+shade*.65);d[j+2]=Math.max(0,d[j+2]+shade*.55)}}}og.putImageData(img,0,0);
-og.globalCompositeOperation='source-atop';og.filter='blur('+7*D+'px)';og.strokeStyle='rgba(255,245,240,.7)';og.lineWidth=9*D;og.strokeRect(W*.22,H*.34,W*.56,H*.30);og.filter='none';og.globalCompositeOperation='source-over';
-g.fillStyle='#fff';g.fillRect(0,0,W,H);g.save();g.shadowColor='rgba(101,45,39,.22)';g.shadowBlur=18*D;g.shadowOffsetY=8*D;g.drawImage(off,0,Math.sin(t*.8)*2*D);g.restore()}
-function point(e){let q=e.touches?e.touches[0]:e;tx=q.clientX/innerWidth;ty=q.clientY/innerHeight;push=1}
-function down(e){point(e);push=1}
-function move(e){if(e.pointerType==='touch'||e.buttons)point(e)}
-function up(){push=.35}
-c.addEventListener('pointerdown',down);c.addEventListener('pointermove',move);c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up);
-c.addEventListener('touchstart',e=>{point(e);push=1},{passive:true});c.addEventListener('touchmove',e=>{point(e);push=1},{passive:true});c.addEventListener('touchend',up,{passive:true});addEventListener('resize',()=>{size();drawMask()});size();drawMask();render();
+const c=document.querySelector('#c'),g=c.getContext('2d');let W,H,D,t=0,p={x:.5,y:.5,down:false},imp=0;
+const base=document.createElement('canvas'),bg=base.getContext('2d');
+function resize(){D=Math.min(devicePixelRatio||1,2);W=c.width=base.width=innerWidth*D;H=c.height=base.height=innerHeight*D;makeBase()}
+function makeBase(){bg.clearRect(0,0,W,H);let fs=Math.min(W*.55,H*.34);bg.font='900 '+fs+'px Arial Black,Arial';bg.textAlign='center';bg.textBaseline='middle';let gr=bg.createLinearGradient(W*.2,H*.35,W*.8,H*.65);gr.addColorStop(0,'#ffd5cc');gr.addColorStop(.45,'#e9a69a');gr.addColorStop(1,'#c97e75');bg.fillStyle=gr;bg.shadowColor='rgba(95,42,35,.20)';bg.shadowBlur=16*D;bg.shadowOffsetY=8*D;bg.fillText('117',W*.5,H*.49);bg.shadowColor='transparent'}
+function pos(e){let q=e.touches?.[0]||e;p.x=q.clientX/innerWidth;p.y=q.clientY/innerHeight}
+c.onpointerdown=e=>{pos(e);p.down=true;imp=1;c.setPointerCapture?.(e.pointerId)};c.onpointermove=e=>{if(p.down)pos(e)};c.onpointerup=c.onpointercancel=()=>p.down=false;
+c.addEventListener('touchstart',e=>{pos(e);p.down=true;imp=1},{passive:true});c.addEventListener('touchmove',e=>{pos(e);imp=1},{passive:true});c.addEventListener('touchend',()=>p.down=false,{passive:true});
+function frame(){requestAnimationFrame(frame);t+=.025;imp*=p.down?.995:.94;g.fillStyle='#fff';g.fillRect(0,0,W,H);
+const slices=34,sy=H*.30,sh=H*.40/slices,cx=p.x*W,cy=p.y*H;
+for(let i=0;i<slices;i++){let y=sy+i*sh,mid=y+sh*.5,dy=(mid-cy)/(150*D),fall=Math.exp(-dy*dy*1.8),breath=Math.sin(t+i*.38)*2.2*D;
+let shove=(p.down?1:imp)*fall*42*D;let dir=(cx<W*.5?1:-1);let dx=breath+dir*shove;
+let squash=(p.down?1:imp)*fall*.20;g.save();g.translate(dx,0);g.scale(1+squash,1);g.drawImage(base,0,y,W,sh+1,0,y,W,sh+1);g.restore()}
+if(p.down||imp>.05){let r=(52+imp*28)*D,gr=g.createRadialGradient(cx-r*.2,cy-r*.25,2,cx,cy,r);gr.addColorStop(0,'rgba(255,255,255,.24)');gr.addColorStop(.55,'rgba(190,102,92,.10)');gr.addColorStop(1,'rgba(110,48,42,0)');g.fillStyle=gr;g.beginPath();g.arc(cx,cy,r,0,Math.PI*2);g.fill()}}
+addEventListener('resize',resize);resize();frame();
