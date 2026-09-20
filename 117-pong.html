@@ -16,4 +16,4 @@ let big=Math.min(H*.30,W*.28);numeral('1',W*.10,player*H,big,(t*.018)%360);numer
 g.save();g.globalAlpha=.18;g.font=`900 ${Math.max(28,W*.07)}px Impact,Arial Black`;g.fillStyle='#111';g.textAlign='center';g.fillText(score[0],W*.34,H*.09);g.fillText(score[1],W*.66,H*.09);g.restore();
 if(flash>0){g.save();g.globalAlpha=Math.min(.92,flash);g.fillStyle=`hsl(${flashHue} 100% 70%)`;g.fillRect(0,0,W,H);g.globalAlpha=flash;g.shadowColor='#00eaff';g.shadowBlur=45;g.fillStyle='#fff';g.font=`900 ${Math.min(W*.42,H*.34)}px Impact,Arial Black`;g.textAlign='center';g.textBaseline='middle';g.fillText('117',W/2,H/2);g.restore();flash-=.055*dt}
 requestAnimationFrame(frame)}requestAnimationFrame(frame);
-addEventListener('pointerdown',()=>audio(),{once:true});</script></body></html>
+addEventListener('pointerdown',()=>audio(),{once:true});</script><script src="117-audio.js?v=magic4"></script></body></html>
