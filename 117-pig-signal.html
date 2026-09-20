@@ -23,7 +23,7 @@ pig(cx-g,cy,S,1,t,0);pig(cx,cy,S,1,t,.9);pig(cx+g*1.18,cy,S,7,t,1.8);
 if(Math.sin(t*3.1)>.72){let sy=(.5+.5*Math.sin(t*11))*h,sh=8+18*(.5+.5*Math.sin(t*7));x.drawImage(c,0,sy*d,c.width,sh*d,Math.sin(t*19)*28,sy,w,sh)}
 requestAnimationFrame(F)}requestAnimationFrame(F);
 
-const pigAudio=new Audio('https://upload.wikimedia.org/wikipedia/commons/a/ac/Pig_grunt_-_Erdie.ogg');pigAudio.preload='auto';
+const pigAudio=new Audio('https://upload.wikimedia.org/wikipedia/commons/a/ac/Pig_grunt_-_Erdie.ogg');pigAudio.preload='auto';pigAudio.playsInline=true;
 function pigSound(){try{pigAudio.pause();pigAudio.currentTime=0;pigAudio.volume=.18;pigAudio.play()}catch(e){}}
 c.addEventListener('pointerdown',e=>{let S=Math.min(w,h)*.48,cx=w*.425,cy=h*.50,g=S*.47;const hits=[[cx-g,cy],[cx,cy],[cx+g*1.18,cy]];if(hits.some(([px,py])=>Math.abs(e.clientX-px)<S*.34&&Math.abs(e.clientY-py)<S*.65))pigSound()});
 // Pig recording: erdie / Freesound, CC BY 3.0, via Wikimedia Commons.
