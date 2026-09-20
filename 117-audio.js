@@ -1,39 +1,42 @@
-/* 117 — real recorded playful sound layer. No synthesis, no TTS.
-   Public-domain / CC0 recordings from Wikimedia Commons. Starts after touch on iOS. */
-(()=>{const p=location.pathname.split('/').pop()||'',C='https://commons.wikimedia.org/wiki/Special:Redirect/file/';
-const F={
- chime:'OER 5200 Chime Door open and close.ogg',
- wind:'Windchimes.ogg',
- bells:'Soothing jingling little bells ambience.ogg',
- pottery:'Chiming pottery.ogg',
- agogo:'Agogo.ogg',
- airplane:'Airplane Chime Sound Effect.ogg'
+/* 117 REAL AUDIO RADIO — real recordings only, no synthesis/TTS.
+   Mix per event: 70% spoken 117 / 20% real playful-animal sound / 10% odd real speech.
+   Every event <=5s with fade-in/out. Starts after first user gesture (iOS). */
+(()=>{const p=location.pathname.split('/').pop()||'';
+if(['117-pig-runner.html','117-pig-signal.html','117-pong.html'].includes(p))return;
+const R='https://commons.wikimedia.org/wiki/Special:Redirect/file/';
+const U={
+  // Real human pronunciation of 117 (Northern Sotho), Wikimedia/Wikidata pronunciation audio.
+  n117:'https://upload.wikimedia.org/wikipedia/commons/transcoded/4/40/LL-Q33890_%28nso%29-Mohau-117.wav/LL-Q33890_%28nso%29-Mohau-117.wav.mp3',
+  pig:R+encodeURIComponent('Pig grunt - Erdie.ogg'),
+  wind:R+encodeURIComponent('Windchimes.ogg'),
+  bells:R+encodeURIComponent('Soothing jingling little bells ambience.ogg'),
+  pottery:R+encodeURIComponent('Chiming pottery.ogg'),
+  odd:R+encodeURIComponent('Come here, my child.ogg')
 };
-const M={
- '117-time-cut.html':['wind',.055,1],
- '117-liquid-drift.html':['bells',.040,.96],
- '117-chronosculpt.html':['pottery',.045,.94],
- '117-black-time.html':['chime',.032,.90],
- '117-tvtv.html':['airplane',.045,1.03],
- '117-meaning.html':['bells',.045,1],
- '117-museum-signal.html':['chime',.040,.98],
- '117-clean-chaos.html':['agogo',.025,.94],
- '117-liquid-glass.html':['wind',.040,.92],
- '117-prism-orbit.html':['bells',.050,1.04],
- '117-mercury-bloom.html':['pottery',.035,.90],
- '117-ribbon-cut.html':['chime',.038,1.06],
- '117-ghost-type.html':['wind',.032,.88],
- '117-organic-ink.html':['bells',.040,.95],
- '117-metal-cube.html':['pottery',.036,.91],
- '117-maze.html':['chime',.038,1],
- '117-snake.html':['agogo',.025,1.03]
-};
-const fallback=['bells',.035,.97];const m=M[p]||fallback;if(p==='117-pig-runner.html'||p==='117-pig-signal.html'||p==='117-pong.html')return;let started=false,a;
-function startAgain(){started=false;start()}
-function start(){if(started)return;started=true;a=new Audio(C+encodeURIComponent(F[m[0]]));a.preload='auto';a.volume=0;a.loop=false;a.playbackRate=m[2];a.play().then(()=>{
- const target=m[1],up=setInterval(()=>{a.volume=Math.min(target,a.volume+.002);if(a.volume>=target)clearInterval(up)},80);
- const fade=()=>{clearInterval(up);const dn=setInterval(()=>{a.volume=Math.max(0,a.volume-.002);if(a.volume<=.002){clearInterval(dn);a.pause();setTimeout(()=>{a.currentTime=0;startAgain()},3500+Math.random()*6000)}},80)};
- setTimeout(fade,7000+Math.random()*5000);
-}).catch(()=>{started=false})}
+let unlocked=false,timer=null,last=null;
+function fadePlay(url,vol=0.10,max=4.7){
+ const a=new Audio(url);last=a;a.preload='auto';a.volume=0;
+ const stopAt=Math.min(max,4.7),step=50,fade=.65;
+ a.play().then(()=>{
+   let t0=performance.now();
+   const iv=setInterval(()=>{
+     const t=(performance.now()-t0)/1000;
+     if(t<fade)a.volume=vol*(t/fade);
+     else if(t>stopAt-fade)a.volume=Math.max(0,vol*((stopAt-t)/fade));
+     else a.volume=vol;
+     if(t>=stopAt){clearInterval(iv);a.pause();a.currentTime=0}
+   },step);
+ }).catch(()=>{});
+}
+function event(){
+ const r=Math.random();
+ if(r<.70) fadePlay(U.n117,.115,3.8);
+ else if(r<.90){
+   const q=Math.random();
+   fadePlay(q<.34?U.pig:q<.67?U.wind:q<.84?U.bells:U.pottery,q<.34?.07:.055,4.4);
+ } else fadePlay(U.odd,.085,3.2);
+ timer=setTimeout(event,9000+Math.random()*13000);
+}
+function start(){if(unlocked)return;unlocked=true;setTimeout(event,700+Math.random()*1200)}
 ['pointerup','touchend','click'].forEach(e=>addEventListener(e,start,{once:true,passive:true}));
 })();
