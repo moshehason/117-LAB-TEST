@@ -25,4 +25,30 @@ function F(ms){let t=(ms-start)/1000;x.setTransform(d,0,0,d,0,0);x.clearRect(0,0
 let left=hxPos-hs*.48,top=py-hs*.62,bw=hs*1.18,bh=hs*1.18,slices=16;
 for(let i=0;i<slices;i++){let sy=top+(bh/slices)*i,sh=bh/slices+1,dx=Math.sin(t*15+i*2.31)*4;if((i+Math.floor(t*10))%5===0)dx+=Math.sin(t*37+i)*10;x.drawImage(hc,left*d,sy*d,bw*d,sh*d,left+dx,sy,bw,sh)}
 requestAnimationFrame(F)}requestAnimationFrame(F);
-</script><script src="117-audio.js"></script></body></html>
+</script><script>
+(()=>{let ac,bus,started=false;
+function go(){
+ if(started)return; started=true;
+ const A=window.AudioContext||window.webkitAudioContext;if(!A)return;
+ ac=new A(); if(ac.state==="suspended")ac.resume();
+ bus=ac.createGain();bus.gain.value=.22;bus.connect(ac.destination);
+ // very quiet low chase ambience
+ const o=ac.createOscillator(),g=ac.createGain(),lp=ac.createBiquadFilter();
+ o.type="sine";o.frequency.value=49;g.gain.value=.035;lp.type="lowpass";lp.frequency.value=180;
+ o.connect(g).connect(lp).connect(bus);o.start();
+ // whisper-like breath pulses: "hey... hey... come here" rhythm, generated locally so iOS cannot block a remote file/TTS
+ const words=[[0,.18],[.42,.18],[.95,.12],[1.18,.12],[1.42,.28]];
+ words.forEach(([at,len],i)=>setTimeout(()=>breath(len,i),at*1000));
+}
+function breath(len,i){
+ if(!ac)return;
+ const n=Math.max(1,Math.floor(ac.sampleRate*len)),b=ac.createBuffer(1,n,ac.sampleRate),a=b.getChannelData(0);
+ for(let j=0;j<n;j++){let e=Math.sin(Math.PI*j/n);a[j]=(Math.random()*2-1)*e;}
+ const src=ac.createBufferSource(),bp=ac.createBiquadFilter(),g=ac.createGain();
+ bp.type="bandpass";bp.frequency.value=i<2?620:470;bp.Q.value=2.2;g.gain.value=i<2?.16:.11;
+ src.buffer=b;src.connect(bp).connect(g).connect(bus);src.start();
+}
+document.addEventListener("touchend",go,{once:true,passive:true});
+document.addEventListener("click",go,{once:true});
+})();
+</script></body></html>
