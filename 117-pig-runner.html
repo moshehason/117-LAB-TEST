@@ -26,29 +26,22 @@ let left=hxPos-hs*.48,top=py-hs*.62,bw=hs*1.18,bh=hs*1.18,slices=16;
 for(let i=0;i<slices;i++){let sy=top+(bh/slices)*i,sh=bh/slices+1,dx=Math.sin(t*15+i*2.31)*4;if((i+Math.floor(t*10))%5===0)dx+=Math.sin(t*37+i)*10;x.drawImage(hc,left*d,sy*d,bw*d,sh*d,left+dx,sy,bw,sh)}
 requestAnimationFrame(F)}requestAnimationFrame(F);
 </script><script>
-(()=>{let ac,bus,started=false;
-function go(){
- if(started)return; started=true;
+(()=>{let ac,started=false;
+async function go(){
+ if(started)return;
  const A=window.AudioContext||window.webkitAudioContext;if(!A)return;
- ac=new A(); if(ac.state==="suspended")ac.resume();
- bus=ac.createGain();bus.gain.value=.22;bus.connect(ac.destination);
- // very quiet low chase ambience
- const o=ac.createOscillator(),g=ac.createGain(),lp=ac.createBiquadFilter();
- o.type="sine";o.frequency.value=49;g.gain.value=.035;lp.type="lowpass";lp.frequency.value=180;
- o.connect(g).connect(lp).connect(bus);o.start();
- // whisper-like breath pulses: "hey... hey... come here" rhythm, generated locally so iOS cannot block a remote file/TTS
- const words=[[0,.18],[.42,.18],[.95,.12],[1.18,.12],[1.42,.28]];
- words.forEach(([at,len],i)=>setTimeout(()=>breath(len,i),at*1000));
+ ac=ac||new A();
+ try{await ac.resume()}catch(e){}
+ // loud audible confirmation + soft chase ambience, all scheduled synchronously after resume
+ const now=ac.currentTime+.03, master=ac.createGain();master.gain.setValueAtTime(.38,now);master.connect(ac.destination);
+ const o=ac.createOscillator(),g=ac.createGain();o.type="sine";o.frequency.value=78;g.gain.setValueAtTime(.16,now);g.gain.exponentialRampToValueAtTime(.025,now+.35);o.connect(g).connect(master);o.start(now);o.stop(now+.4);
+ // breathy hunter motif
+ for(let k=0;k<5;k++){const len=k<2?.22:.16,n=Math.floor(ac.sampleRate*len),buf=ac.createBuffer(1,n,ac.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.sin(Math.PI*i/n);const src=ac.createBufferSource(),bp=ac.createBiquadFilter(),gg=ac.createGain();bp.type="bandpass";bp.frequency.value=k<2?700:520;bp.Q.value=2;gg.gain.value=.24;src.buffer=buf;src.connect(bp).connect(gg).connect(master);src.start(now+[.15,.58,1.05,1.30,1.58][k]);}
+ started=true;
 }
-function breath(len,i){
- if(!ac)return;
- const n=Math.max(1,Math.floor(ac.sampleRate*len)),b=ac.createBuffer(1,n,ac.sampleRate),a=b.getChannelData(0);
- for(let j=0;j<n;j++){let e=Math.sin(Math.PI*j/n);a[j]=(Math.random()*2-1)*e;}
- const src=ac.createBufferSource(),bp=ac.createBiquadFilter(),g=ac.createGain();
- bp.type="bandpass";bp.frequency.value=i<2?620:470;bp.Q.value=2.2;g.gain.value=i<2?.16:.11;
- src.buffer=b;src.connect(bp).connect(g).connect(bus);src.start();
-}
-document.addEventListener("touchend",go,{once:true,passive:true});
-document.addEventListener("click",go,{once:true});
+const unlock=e=>{go();};
+window.addEventListener("pointerup",unlock,{once:true});
+window.addEventListener("touchend",unlock,{once:true});
+window.addEventListener("click",unlock,{once:true});
 })();
 </script></body></html>
