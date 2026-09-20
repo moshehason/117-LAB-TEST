@@ -28,7 +28,7 @@ const M={
  '117-maze.html':['chime',.038,1],
  '117-snake.html':['agogo',.025,1.03]
 };
-const m=M[p];if(!m)return;let started=false,a;
+const fallback=['bells',.035,.97];const m=M[p]||fallback;if(p==='117-pig-runner.html'||p==='117-pig-signal.html'||p==='117-pong.html')return;let started=false,a;
 function startAgain(){started=false;start()}
 function start(){if(started)return;started=true;a=new Audio(C+encodeURIComponent(F[m[0]]));a.preload='auto';a.volume=0;a.loop=false;a.playbackRate=m[2];a.play().then(()=>{
  const target=m[1],up=setInterval(()=>{a.volume=Math.min(target,a.volume+.002);if(a.volume>=target)clearInterval(up)},80);
