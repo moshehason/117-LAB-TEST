@@ -24,7 +24,7 @@ if(Math.sin(t*3.1)>.72){let sy=(.5+.5*Math.sin(t*11))*h,sh=8+18*(.5+.5*Math.sin(
 requestAnimationFrame(F)}requestAnimationFrame(F);
 
 const pigAudio=new Audio('https://upload.wikimedia.org/wikipedia/commons/a/ac/Pig_grunt_-_Erdie.ogg');pigAudio.preload='auto';
-function pigSound(){try{pigAudio.pause();pigAudio.currentTime=0;pigAudio.play()}catch(e){}}
+function pigSound(){try{pigAudio.pause();pigAudio.currentTime=0;pigAudio.volume=.18;pigAudio.play()}catch(e){}}
 c.addEventListener('pointerdown',e=>{let S=Math.min(w,h)*.48,cx=w*.425,cy=h*.50,g=S*.47;const hits=[[cx-g,cy],[cx,cy],[cx+g*1.18,cy]];if(hits.some(([px,py])=>Math.abs(e.clientX-px)<S*.34&&Math.abs(e.clientY-py)<S*.65))pigSound()});
 // Pig recording: erdie / Freesound, CC BY 3.0, via Wikimedia Commons.
-</script><script src="117-audio.js?v=real1"></script></body></html>
+</script></body></html>
