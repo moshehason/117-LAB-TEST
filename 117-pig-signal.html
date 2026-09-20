@@ -23,6 +23,8 @@ pig(cx-g,cy,S,1,t,0);pig(cx,cy,S,1,t,.9);pig(cx+g*1.18,cy,S,7,t,1.8);
 if(Math.sin(t*3.1)>.72){let sy=(.5+.5*Math.sin(t*11))*h,sh=8+18*(.5+.5*Math.sin(t*7));x.drawImage(c,0,sy*d,c.width,sh*d,Math.sin(t*19)*28,sy,w,sh)}
 requestAnimationFrame(F)}requestAnimationFrame(F);
 
-function pigSound(){const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const ac=window.__pigAC||(window.__pigAC=new A());if(ac.state==='suspended')ac.resume();const now=ac.currentTime,g=ac.createGain(),o=ac.createOscillator(),o2=ac.createOscillator();g.connect(ac.destination);o.connect(g);o2.connect(g);o.type='sawtooth';o2.type='square';o.frequency.setValueAtTime(165,now);o.frequency.exponentialRampToValueAtTime(92,now+.22);o2.frequency.setValueAtTime(78,now);o2.frequency.exponentialRampToValueAtTime(54,now+.22);g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(.16,now+.018);g.gain.exponentialRampToValueAtTime(.0001,now+.28);o.start(now);o2.start(now);o.stop(now+.3);o2.stop(now+.3)}
+const pigAudio=new Audio('https://upload.wikimedia.org/wikipedia/commons/a/ac/Pig_grunt_-_Erdie.ogg');pigAudio.preload='auto';
+function pigSound(){try{pigAudio.pause();pigAudio.currentTime=0;pigAudio.play()}catch(e){}}
 c.addEventListener('pointerdown',e=>{let S=Math.min(w,h)*.48,cx=w*.425,cy=h*.50,g=S*.47;const hits=[[cx-g,cy],[cx,cy],[cx+g*1.18,cy]];if(hits.some(([px,py])=>Math.abs(e.clientX-px)<S*.34&&Math.abs(e.clientY-py)<S*.65))pigSound()});
+// Pig recording: erdie / Freesound, CC BY 3.0, via Wikimedia Commons.
 </script></body></html>
