@@ -25,4 +25,14 @@ function F(ms){let t=(ms-start)/1000;x.setTransform(d,0,0,d,0,0);x.clearRect(0,0
 let left=hxPos-hs*.48,top=py-hs*.62,bw=hs*1.18,bh=hs*1.18,slices=16;
 for(let i=0;i<slices;i++){let sy=top+(bh/slices)*i,sh=bh/slices+1,dx=Math.sin(t*15+i*2.31)*4;if((i+Math.floor(t*10))%5===0)dx+=Math.sin(t*37+i)*10;x.drawImage(hc,left*d,sy*d,bw*d,sh*d,left+dx,sy,bw,sh)}
 requestAnimationFrame(F)}requestAnimationFrame(F);
-</script><script src="117-audio.js?v=real1"></script></body></html>
+</script><script>
+(()=>{let once=false;
+const C='https://commons.wikimedia.org/wiki/Special:Redirect/file/';
+function A(n,v,r){const a=new Audio(C+encodeURIComponent(n));a.volume=v;a.playbackRate=r||1;return a}
+function start(){if(once)return;once=true;
+ const h1=A('En-us-hey.ogg',.11,.82),h2=A('En-us-hey.ogg',.10,.78),c=A('En-us-come.ogg',.095,.80),h=A('En-us-here.ogg',.085,.80);
+ h1.play().catch(()=>{});setTimeout(()=>h2.play().catch(()=>{}),650);setTimeout(()=>c.play().catch(()=>{}),1450);setTimeout(()=>h.play().catch(()=>{}),1900);
+}
+addEventListener('pointerup',start,{once:true});addEventListener('touchend',start,{once:true});addEventListener('click',start,{once:true});
+})();
+</script></body></html>
