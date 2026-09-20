@@ -28,24 +28,24 @@ requestAnimationFrame(F)}requestAnimationFrame(F);
 </script><script>
 (()=>{const R='https://commons.wikimedia.org/wiki/Special:Redirect/file/';
 const clips=[
- ['Come here, my child.ogg',0,2.1],
- ['EP- Iku Kima-Come here.webm',2.2,1.8],
- ['EP- Iku Kima-Come here.webm',8.2,1.8],
- ['Come here, my child.ogg',0,1.7],
- ['EP- Iku Kima-Come here.webm',1.7,2.2],
- ['EP- Iku Kima-Come here.webm',7.7,2.2],
- ['Come here, my child.ogg',0,2.0],
- ['EP- Iku Kima-Come here.webm',2.0,2.0],
- ['EP- Iku Kima-Come here.webm',8.0,2.0],
- ['Come here, my child.ogg',0,1.9]
+['Come here, my child.ogg',0,2.0],['EP- Iku Kima-Come here.webm',2.0,2.0],['EP- Iku Kima-Come here.webm',8.0,2.0],
+['"JAP LANGUAGE USEFUL PHRASES" USMC MARINE CORPS WWII TRAINING FILM 64734.webm',409,2.2],
+['"JAP LANGUAGE USEFUL PHRASES" USMC MARINE CORPS WWII TRAINING FILM 64734.webm',414,2.2],
+['"JAP LANGUAGE USEFUL PHRASES" USMC MARINE CORPS WWII TRAINING FILM 64734.webm',419,2.2],
+['"JAP LANGUAGE USEFUL PHRASES" USMC MARINE CORPS WWII TRAINING FILM 64734.webm',424,2.2],
+['"JAP LANGUAGE USEFUL PHRASES" USMC MARINE CORPS WWII TRAINING FILM 64734.webm',529,2.2],
+['"JAP LANGUAGE USEFUL PHRASES" USMC MARINE CORPS WWII TRAINING FILM 64734.webm',534,2.2],
+['"JAP LANGUAGE USEFUL PHRASES" USMC MARINE CORPS WWII TRAINING FILM 64734.webm',539,2.2],
+['Jfk berlin address high.ogg',65,2.5],['Jfk berlin address high.ogg',78,2.5],['Jfk berlin address high.ogg',92,2.5],
+['Tear down this wall.ogg',790,2.8],['Tear down this wall.ogg',793,2.8],
+['Come here, my child.ogg',0,1.55],['EP- Iku Kima-Come here.webm',1.5,2.4],['EP- Iku Kima-Come here.webm',7.5,2.4],
+['"JAP LANGUAGE USEFUL PHRASES" USMC MARINE CORPS WWII TRAINING FILM 64734.webm',411,3.0],
+['"JAP LANGUAGE USEFUL PHRASES" USMC MARINE CORPS WWII TRAINING FILM 64734.webm',531,3.0]
 ];
-let last=-1,a=null,stopTimer=null;
-function shout(){let n;do{n=Math.floor(Math.random()*clips.length)}while(n===last);last=n;const [file,off,dur]=clips[n];
- if(stopTimer)clearTimeout(stopTimer);if(a){try{a.pause()}catch(e){}}
- a=new Audio(R+encodeURIComponent(file));a.preload='auto';a.playsInline=true;a.volume=0;
- const start=()=>{try{a.currentTime=off}catch(e){};const p=a.play();if(p)p.then(()=>{let t0=performance.now(),v=.22,iv=setInterval(()=>{let t=(performance.now()-t0)/1000;a.volume=t<.12?v*t/.12:t>dur-.22?Math.max(0,v*(dur-t)/.22):v;if(t>=dur||a.ended){clearInterval(iv);try{a.pause()}catch(e){}}},30)}).catch(()=>{})};
- if(a.readyState>=1)start();else a.addEventListener('loadedmetadata',start,{once:true});
-}
+let bag=[],a=null;
+function next(){if(!bag.length){bag=[...Array(clips.length).keys()];for(let i=bag.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[bag[i],bag[j]]=[bag[j],bag[i]]}}return bag.pop()}
+function shout(){const [file,off,dur]=clips[next()];if(a)try{a.pause()}catch(e){};a=new Audio(R+encodeURIComponent(file));a.preload='auto';a.playsInline=true;a.volume=0;
+const go=()=>{try{a.currentTime=off}catch(e){};let p=a.play();if(p)p.then(()=>{let t0=performance.now(),v=.23,iv=setInterval(()=>{let t=(performance.now()-t0)/1000;a.volume=t<.12?v*t/.12:t>dur-.25?Math.max(0,v*(dur-t)/.25):v;if(t>=dur||a.ended){clearInterval(iv);a.pause()}},30)}).catch(()=>{})};if(a.readyState>=1)go();else a.addEventListener('loadedmetadata',go,{once:true})}
 addEventListener('pointerdown',shout,{passive:true});
 })();
 </script></body></html>
