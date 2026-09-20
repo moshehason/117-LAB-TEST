@@ -17,7 +17,7 @@ x.fillStyle='#050505';x.fillRect(-.12,-.18,.24,.11);x.fillStyle='#fff';for(let i
 for(let i=0;i<17;i++){let xx=-.115+i*.014+Math.sin(t*4+i)*.008,hh=.28+.24*(.5+.5*Math.sin(t*2+i*1.7+p));x.fillStyle=i%3?'#73dfff':'#d9f8ff';x.fillRect(xx,-.07,.012,hh)}
 // RGB fragment noise
 for(let i=0;i<18;i++){let xx=Math.sin(i*31.3+p)*W,yy=((i*.173+t*(.03+.008*(i%4)))%1.2)-.6;x.fillStyle=i%4===0?'#ff1dbb':i%4===1?'#00e5ff':i%4===2?'#f7ee00':'#090909';x.globalAlpha=.55;x.fillRect(xx,yy,.025+.018*(i%3),.014+.015*(i%4))}x.globalAlpha=1;x.restore()}
-function F(ms){let t=ms*.001;x.setTransform(d,0,0,d,0,0);x.fillStyle='#fff';x.fillRect(0,0,w,h);let S=Math.min(w,h)*.48,cx=w*.49,cy=h*.50,g=S*.47;
+function F(ms){let t=ms*.001;x.setTransform(d,0,0,d,0,0);x.fillStyle='#fff';x.fillRect(0,0,w,h);let S=Math.min(w,h)*.48,cx=w*.29,cy=h*.50,g=S*.47;
 // subtle horizontal temporal slicing of whole composition
 pig(cx-g,cy,S,1,t,0);pig(cx,cy,S,1,t,.9);pig(cx+g*1.18,cy,S,7,t,1.8);
 if(Math.sin(t*3.1)>.72){let sy=(.5+.5*Math.sin(t*11))*h,sh=8+18*(.5+.5*Math.sin(t*7));x.drawImage(c,0,sy*d,c.width,sh*d,Math.sin(t*19)*28,sy,w,sh)}
