@@ -9,21 +9,19 @@
 function bell(){try{gac=gac||new(window.AudioContext||window.webkitAudioContext)();gac.resume();let n=gac.currentTime;[[880,0,.55,.045],[1760,.012,.38,.018]].forEach(([f,t,d,vv])=>{let o=gac.createOscillator(),v=gac.createGain();o.type='sine';o.frequency.setValueAtTime(f,n+t);v.gain.setValueAtTime(vv,n+t);v.gain.exponentialRampToValueAtTime(.0001,n+t+d);o.connect(v);v.connect(gac.destination);o.start(n+t);o.stop(n+t+d)})}catch(e){}}
 function fairy(){try{gac=gac||new(window.AudioContext||window.webkitAudioContext)();gac.resume();let n=gac.currentTime;[1047,1319,1568,2093].forEach((f,i)=>{let o=gac.createOscillator(),v=gac.createGain(),t=n+i*.055;o.type='sine';o.frequency.setValueAtTime(f,t);v.gain.setValueAtTime(.032,t);v.gain.exponentialRampToValueAtTime(.0001,t+.32);o.connect(v);v.connect(gac.destination);o.start(t);o.stop(t+.32)})}catch(e){}}
 async function grantTilt(){try{if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function')tiltGranted=(await DeviceOrientationEvent.requestPermission())==='granted';else tiltGranted=true}catch(e){tiltGranted=false}sessionStorage.setItem('117tilt',tiltGranted?'1':'0')}
-go.onclick=()=>{gp.classList.add('on');grantTilt()};document.getElementById('gamesClose').onclick=()=>gp.classList.remove('on');const gf=document.getElementById('gameFrame'),gi=document.getElementById('gameIframe');document.querySelectorAll('.effectlink').forEach(a=>a.onclick=e=>{e.preventDefault();gi.src=a.dataset.href;gf.classList.add('on')});document.querySelectorAll('.gameitem').forEach(a=>a.onclick=async e=>{e.preventDefault();gi.src=a.getAttribute('href');gf.classList.add('on');gp.classList.remove('on')});document.getElementById('gameBack').onclick=()=>{gf.classList.remove('on');gi.src='about:blank'}}</script><script id="glass117-init">addEventListener('load',()=>{[...document.querySelectorAll('body *')].filter(e=>e.children.length===0&&e.textContent.trim()==='117').forEach((e,i)=>{if(i===0)return;e.classList.add('glass117');e.style.color='rgba(225,245,255,.055)';e.style.webkitTextStroke='1.6px rgba(235,250,255,.92)';e.style.textShadow='inset 0 0 18px rgba(120,210,255,.18),0 0 22px rgba(70,145,255,.08)';});});</script><script id="117-real-radio-v1">
+go.onclick=()=>{gp.classList.add('on');grantTilt()};document.getElementById('gamesClose').onclick=()=>gp.classList.remove('on');const gf=document.getElementById('gameFrame'),gi=document.getElementById('gameIframe');document.querySelectorAll('.effectlink').forEach(a=>a.onclick=e=>{e.preventDefault();gi.src=a.dataset.href;gf.classList.add('on')});document.querySelectorAll('.gameitem').forEach(a=>a.onclick=async e=>{e.preventDefault();gi.src=a.getAttribute('href');gf.classList.add('on');gp.classList.remove('on')});document.getElementById('gameBack').onclick=()=>{gf.classList.remove('on');gi.src='about:blank'}}</script><script id="glass117-init">addEventListener('load',()=>{[...document.querySelectorAll('body *')].filter(e=>e.children.length===0&&e.textContent.trim()==='117').forEach((e,i)=>{if(i===0)return;e.classList.add('glass117');e.style.color='rgba(225,245,255,.055)';e.style.webkitTextStroke='1.6px rgba(235,250,255,.92)';e.style.textShadow='inset 0 0 18px rgba(120,210,255,.18),0 0 22px rgba(70,145,255,.08)';});});</script><script id="117-real-radio-v2">
 (()=>{const R='https://commons.wikimedia.org/wiki/Special:Redirect/file/';
-const pool={
-talk:['https://upload.wikimedia.org/wikipedia/commons/transcoded/4/40/LL-Q33890_%28nso%29-Mohau-117.wav/LL-Q33890_%28nso%29-Mohau-117.wav.mp3'],
-animal:[R+encodeURIComponent('Pig grunt - Erdie.ogg'),R+encodeURIComponent('Meow of a Siamese cat - freemaster2.wav')],
-odd:[R+encodeURIComponent('Short clip of girl laughing.wav')]
-};
-let started=false,player=new Audio(),tm=0;
-player.preload='auto';
-function pick(a){return a[Math.floor(Math.random()*a.length)]}
-function fade(url,vol=.1,max=4.5){player.pause();player.src=url;player.currentTime=0;player.volume=0;
-player.play().then(()=>{const t0=performance.now(),f=.55;const iv=setInterval(()=>{let t=(performance.now()-t0)/1000;player.volume=t<f?vol*t/f:t>max-f?Math.max(0,vol*(max-t)/f):vol;if(t>=max||player.ended){clearInterval(iv);player.pause();next()}},50)}).catch(()=>next())}
-function next(){clearTimeout(tm);tm=setTimeout(run,7000+Math.random()*9000)}
-function run(){const r=Math.random();if(r<.70)fade(pick(pool.talk),.14,3.8);else if(r<.90)fade(pick(pool.animal),.08,2.2);else fade(pick(pool.odd),.09,2.4)}
-function start(){if(started)return;started=true;fade(pick(pool.talk),.14,3.8)}
+const talk=[
+'https://upload.wikimedia.org/wikipedia/commons/transcoded/4/40/LL-Q33890_%28nso%29-Mohau-117.wav/LL-Q33890_%28nso%29-Mohau-117.wav.mp3',
+R+encodeURIComponent('En-us-one.ogg'),R+encodeURIComponent('En-us-hundred.ogg'),R+encodeURIComponent('En-us-seventeen.ogg')
+];
+const animals=[R+encodeURIComponent('Pig grunt - Erdie.ogg')];
+let on=false,p=new Audio(),tm,idx=0;
+function fade(src,v=.14,d=3.9,cb){p.pause();p.src=src;p.currentTime=0;p.volume=0;p.play().then(()=>{let t0=performance.now(),f=.45,iv=setInterval(()=>{let t=(performance.now()-t0)/1000;p.volume=t<f?v*t/f:t>d-f?Math.max(0,v*(d-t)/f):v;if(t>=d||p.ended){clearInterval(iv);p.pause();cb&&cb()}},45)}).catch(()=>cb&&cb())}
+function spoken117(){let seq=[talk[1],talk[2],talk[3]],i=0;function n(){if(i<seq.length)fade(seq[i++],.14,1.05,n);else next()} n()}
+function next(){clearTimeout(tm);tm=setTimeout(run,2500+Math.random()*4500)}
+function run(){let r=Math.random();if(r<.70){if(Math.random()<.65)fade(talk[0],.15,3.8,next);else spoken117()}else if(r<.90)fade(animals[0],.07,2.1,next);else spoken117()}
+function start(){if(on)return;on=true;spoken117()}
 ['pointerup','touchend','click'].forEach(e=>addEventListener(e,start,{once:true,passive:true}));
 })();
 </script></body></html>
