@@ -25,4 +25,26 @@ function F(ms){let t=(ms-start)/1000;x.setTransform(d,0,0,d,0,0);x.clearRect(0,0
 let left=hxPos-hs*.48,top=py-hs*.62,bw=hs*1.18,bh=hs*1.18,slices=16;
 for(let i=0;i<slices;i++){let sy=top+(bh/slices)*i,sh=bh/slices+1,dx=Math.sin(t*15+i*2.31)*4;if((i+Math.floor(t*10))%5===0)dx+=Math.sin(t*37+i)*10;x.drawImage(hc,left*d,sy*d,bw*d,sh*d,left+dx,sy,bw,sh)}
 requestAnimationFrame(F)}requestAnimationFrame(F);
-</script><script>(()=>{const a=new Audio('https://commons.wikimedia.org/wiki/Special:Redirect/file/En-us-come.ogg');a.preload='auto';let last=0;function cue(){if(Date.now()-last<1500)return;last=Date.now();a.pause();a.currentTime=0;a.volume=.22;let p=a.play();if(p)p.catch(()=>{})}addEventListener('pointerdown',cue,{passive:true});addEventListener('touchstart',cue,{passive:true})})();</script></body></html>
+</script><script>
+(()=>{const R='https://commons.wikimedia.org/wiki/Special:Redirect/file/';
+const clips=[
+['Come here, my child.ogg',0,2.7],
+['Venez ici, mon enfant.ogg',0,2.9],
+['LibriVox Language Learning Collection Vol. 003(part1).ogg',0,2.8],
+['En-us-come.ogg',0,1.0],
+['En-us-here.ogg',0,1.0],
+['En-us-come.ogg',0,1.0],
+['Venez ici, mon enfant.ogg',0,2.4],
+['Come here, my child.ogg',0,2.2],
+['LibriVox Language Learning Collection Vol. 003(part1).ogg',0,3.2],
+['Come here, my child.ogg',0,3.0]
+];
+let last=-1,a=null;
+function shout(){let n;do{n=Math.floor(Math.random()*clips.length)}while(n===last);last=n;let [file,off,dur]=clips[n];
+ if(a){try{a.pause()}catch(e){}}a=new Audio(R+encodeURIComponent(file));a.preload='auto';a.playsInline=true;a.volume=0;
+ a.addEventListener('loadedmetadata',()=>{try{a.currentTime=off}catch(e){}},{once:true});
+ let p=a.play();if(p)p.then(()=>{let t0=performance.now(),v=.20,iv=setInterval(()=>{let t=(performance.now()-t0)/1000;a.volume=t<.18?v*t/.18:t>dur-.3?Math.max(0,v*(dur-t)/.3):v;if(t>=dur||a.ended){clearInterval(iv);a.pause()}},35)}).catch(()=>{});
+}
+addEventListener('pointerdown',shout,{passive:true});addEventListener('touchstart',shout,{passive:true});
+})();
+</script></body></html>
