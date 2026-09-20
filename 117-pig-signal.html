@@ -23,8 +23,20 @@ pig(cx-g,cy,S,1,t,0);pig(cx,cy,S,1,t,.9);pig(cx+g*1.18,cy,S,7,t,1.8);
 if(Math.sin(t*3.1)>.72){let sy=(.5+.5*Math.sin(t*11))*h,sh=8+18*(.5+.5*Math.sin(t*7));x.drawImage(c,0,sy*d,c.width,sh*d,Math.sin(t*19)*28,sy,w,sh)}
 requestAnimationFrame(F)}requestAnimationFrame(F);
 
-const pigAudio=new Audio('https://upload.wikimedia.org/wikipedia/commons/a/ac/Pig_grunt_-_Erdie.ogg');pigAudio.preload='auto';pigAudio.playsInline=true;
-function pigSound(){try{pigAudio.pause();pigAudio.currentTime=0;pigAudio.volume=.18;pigAudio.play()}catch(e){}}
+const pigFiles=[
+'Pig grunt - Erdie.ogg','Mudchute pig 1.ogg','Mudchute pig 2.ogg','Mudchute pig 3.ogg',
+'Boar.Grwls(1).ogg'
+];
+const pigStarts=[0,0,0,0,0,2.6,5.2,8.1,11.4,15.2];
+let pigAudio=null,lastPig=-1;
+function pigSound(){
+ let n;do{n=Math.floor(Math.random()*10)}while(n===lastPig);lastPig=n;
+ let fi=n<4?n:4,src='https://commons.wikimedia.org/wiki/Special:Redirect/file/'+encodeURIComponent(pigFiles[fi]);
+ if(pigAudio){try{pigAudio.pause()}catch(e){}}
+ pigAudio=new Audio(src);pigAudio.preload='auto';pigAudio.playsInline=true;pigAudio.volume=0;
+ pigAudio.addEventListener('loadedmetadata',()=>{try{pigAudio.currentTime=pigStarts[n]||0}catch(e){}},{once:true});
+ const p=pigAudio.play();if(p)p.then(()=>{let t0=performance.now(),dur=n<4?.7:1.25,iv=setInterval(()=>{let t=(performance.now()-t0)/1000,v=.23;pigAudio.volume=t<.12?v*t/.12:t>dur-.22?Math.max(0,v*(dur-t)/.22):v;if(t>=dur||pigAudio.ended){clearInterval(iv);pigAudio.pause()}},30)}).catch(()=>{});
+}
 c.addEventListener('pointerdown',e=>{let S=Math.min(w,h)*.48,cx=w*.425,cy=h*.50,g=S*.47;const hits=[[cx-g,cy],[cx,cy],[cx+g*1.18,cy]];if(hits.some(([px,py])=>Math.abs(e.clientX-px)<S*.34&&Math.abs(e.clientY-py)<S*.65))pigSound()});
 // Pig recording: erdie / Freesound, CC BY 3.0, via Wikimedia Commons.
 </script></body></html>
