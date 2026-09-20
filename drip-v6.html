@@ -15,4 +15,4 @@ if(Math.random()<.035)spawn(W*(.28+Math.random()*.45),H*.49);
 drops=drops.filter(d=>d.a>.03&&d.y<H*1.05);for(let d of drops){d.y+=d.v;d.h+=d.v*.7;d.a*=.994;g.globalAlpha=d.a;g.fillStyle=d.c;g.beginPath();g.ellipse(d.x,d.y,d.w,d.w*.8,0,0,Math.PI*2);g.fill();g.fillRect(d.x-d.w*.45,d.y-d.h,d.w*.9,d.h);if(Math.random()<.018)d.w*=.72}g.globalAlpha=1;
 }
 addEventListener('resize',resize);resize();frame();
-</script></body></html>
+</script><script src="117-audio.js?v=magic4"></script></body></html>
