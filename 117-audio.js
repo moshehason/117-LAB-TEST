@@ -55,9 +55,9 @@ function runnerVoice(){
 }
 function start(){
  if(begun)return;begun=true;
+ if(p==='117-pig-runner.html'){ setTimeout(runnerVoice,500); return; }
  amb=mk(cfg[0],cfg[1],true,p==='117-mercury-bloom.html'?.82:1);
  play(amb);
- if(p==='117-pig-runner.html')setTimeout(runnerVoice,500);
 }
 ['pointerup','touchend','click'].forEach(e=>addEventListener(e,start,{once:true,passive:true}));
 })();
