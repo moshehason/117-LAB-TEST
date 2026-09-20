@@ -29,6 +29,11 @@ const M={
  '117-snake.html':['agogo',.025,1.03]
 };
 const m=M[p];if(!m)return;let started=false,a;
-function start(){if(started)return;started=true;a=new Audio(C+encodeURIComponent(F[m[0]]));a.preload='auto';a.volume=m[1];a.loop=true;a.playbackRate=m[2];a.play().catch(()=>{started=false})}
+function startAgain(){started=false;start()}
+function start(){if(started)return;started=true;a=new Audio(C+encodeURIComponent(F[m[0]]));a.preload='auto';a.volume=0;a.loop=false;a.playbackRate=m[2];a.play().then(()=>{
+ const target=m[1],up=setInterval(()=>{a.volume=Math.min(target,a.volume+.002);if(a.volume>=target)clearInterval(up)},80);
+ const fade=()=>{clearInterval(up);const dn=setInterval(()=>{a.volume=Math.max(0,a.volume-.002);if(a.volume<=.002){clearInterval(dn);a.pause();setTimeout(()=>{a.currentTime=0;startAgain()},3500+Math.random()*6000)}},80)};
+ setTimeout(fade,7000+Math.random()*5000);
+}).catch(()=>{started=false})}
 ['pointerup','touchend','click'].forEach(e=>addEventListener(e,start,{once:true,passive:true}));
 })();
