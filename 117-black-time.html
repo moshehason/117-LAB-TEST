@@ -2,12 +2,12 @@
 const c=document.querySelector('#c'),gl=c.getContext('webgl',{antialias:true,alpha:false,powerPreference:'high-performance'});if(!gl)document.body.innerHTML='WEBGL REQUIRED';
 const vs='attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
 const fs=`precision highp float;uniform vec2 r;uniform float t;uniform vec2 m;
-float box(vec2 p,vec2 b){vec2 d=abs(p)-b;return length(max(d,0.))+min(max(d.x,d.y),0.);}
+float box(vec2 p,vec2 b){vec2 d=abs(p)-b;return length(max(d,0.))+min(max(d.x,d.y),0.);}float rbox(vec2 p,vec2 b,float rad){vec2 q=abs(p)-b+rad;return min(max(q.x,q.y),0.)+length(max(q,0.))-rad;}
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1)),f.x),f.y);}
 mat2 rot(float a){return mat2(cos(a),-sin(a),sin(a),cos(a));}
-float one(vec2 p){float s=box(p-vec2(.02,0),vec2(.14,.58));vec2 q=rot(.42)*(p-vec2(-.12,.45));return min(s,box(q,vec2(.23,.13)));}
-float seven(vec2 p){float h=box(p-vec2(0,.48),vec2(.37,.14));vec2 q=rot(-.30)*(p-vec2(.10,-.03));return min(h,box(q,vec2(.14,.56)));}
+float one(vec2 p){float s=rbox(p-vec2(.02,0),vec2(.14,.58),.10);vec2 q=rot(.42)*(p-vec2(-.12,.45));return min(s,rbox(q,vec2(.23,.13),.10));}
+float seven(vec2 p){float h=rbox(p-vec2(0,.48),vec2(.37,.14),.105);vec2 q=rot(-.30)*(p-vec2(.10,-.03));return min(h,rbox(q,vec2(.14,.56),.105));}
 float glyph(vec2 p,float id){return id<.5?one(p):seven(p);}
 float warpedGlyph(vec2 p,float id,float phase){float z=sin(p.y*7.+phase)*.08+sin(p.x*11.-phase*.7)*.055; p.x+=z+(.5-noise(p*4.+phase))*.07;p.y+=sin(p.x*9.+phase*.4)*.045;return glyph(p,id);}
 void main(){vec2 uv=(gl_FragCoord.xy-.5*r)/min(r.x,r.y);uv.y=-uv.y;float asp=r.x/r.y,fit=max(1.,1.22/asp);uv*=fit;uv=-uv;uv.x=-uv.x;
