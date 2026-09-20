@@ -25,23 +25,4 @@ function F(ms){let t=(ms-start)/1000;x.setTransform(d,0,0,d,0,0);x.clearRect(0,0
 let left=hxPos-hs*.48,top=py-hs*.62,bw=hs*1.18,bh=hs*1.18,slices=16;
 for(let i=0;i<slices;i++){let sy=top+(bh/slices)*i,sh=bh/slices+1,dx=Math.sin(t*15+i*2.31)*4;if((i+Math.floor(t*10))%5===0)dx+=Math.sin(t*37+i)*10;x.drawImage(hc,left*d,sy*d,bw*d,sh*d,left+dx,sy,bw,sh)}
 requestAnimationFrame(F)}requestAnimationFrame(F);
-</script><script>
-(()=>{let ac,started=false;
-async function go(){
- if(started)return;
- const A=window.AudioContext||window.webkitAudioContext;if(!A)return;
- ac=ac||new A();
- try{await ac.resume()}catch(e){}
- // loud audible confirmation + soft chase ambience, all scheduled synchronously after resume
- const now=ac.currentTime+.03, master=ac.createGain();master.gain.setValueAtTime(.38,now);master.connect(ac.destination);
- const o=ac.createOscillator(),g=ac.createGain();o.type="sine";o.frequency.value=78;g.gain.setValueAtTime(.16,now);g.gain.exponentialRampToValueAtTime(.025,now+.35);o.connect(g).connect(master);o.start(now);o.stop(now+.4);
- // breathy hunter motif
- for(let k=0;k<5;k++){const len=k<2?.22:.16,n=Math.floor(ac.sampleRate*len),buf=ac.createBuffer(1,n,ac.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.sin(Math.PI*i/n);const src=ac.createBufferSource(),bp=ac.createBiquadFilter(),gg=ac.createGain();bp.type="bandpass";bp.frequency.value=k<2?700:520;bp.Q.value=2;gg.gain.value=.24;src.buffer=buf;src.connect(bp).connect(gg).connect(master);src.start(now+[.15,.58,1.05,1.30,1.58][k]);}
- started=true;
-}
-const unlock=e=>{go();};
-window.addEventListener("pointerup",unlock,{once:true});
-window.addEventListener("touchend",unlock,{once:true});
-window.addEventListener("click",unlock,{once:true});
-})();
-</script></body></html>
+</script><script src="117-audio.js?v=real1"></script></body></html>
