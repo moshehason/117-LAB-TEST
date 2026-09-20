@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>117 LIQUID GLASS</title><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#fff}canvas{display:block;width:100%;height:100%;touch-action:none}.tag,.hint{position:fixed;bottom:max(14px,env(safe-area-inset-bottom));font:700 9px Arial,sans-serif;letter-spacing:.16em;color:#111}.tag{left:16px}.hint{right:16px;color:#777}</style></head><body><canvas id=c></canvas><div class=tag>117 / LIQUID GLASS</div><div class=hint>DRAG / 360°</div><script>
-const c=document.querySelector('#c'),x=c.getContext('2d');let d=1,w,h,drag=0,last=0,rot=0,want=0;
-function resize(){d=Math.min(devicePixelRatio||1,2.5);c.width=innerWidth*d;c.height=innerHeight*d;x.setTransform(d,0,0,d,0,0);w=innerWidth;h=innerHeight}resize();onresize=resize;
+const c=document.querySelector('#c'),x=c.getContext('2d'),bc=document.createElement('canvas'),bx=bc.getContext('2d');let d=1,w,h,drag=0,last=0,rot=0,want=0;
+function resize(){d=Math.min(devicePixelRatio||1,2.5);c.width=innerWidth*d;c.height=innerHeight*d;x.setTransform(d,0,0,d,0,0);w=innerWidth;h=innerHeight;bc.width=Math.max(1,Math.floor(w));bc.height=Math.max(1,Math.floor(h))}resize();onresize=resize;
 c.onpointerdown=e=>{drag=1;last=e.clientX;c.setPointerCapture(e.pointerId)};c.onpointermove=e=>{if(drag){want+=(e.clientX-last)*.009;last=e.clientX}};c.onpointerup=()=>drag=0;
 function rounded(ctx,digit){ctx.beginPath();if(digit===1){ctx.moveTo(-.30,-.43);ctx.quadraticCurveTo(-.12,-.50,.02,-.69);ctx.quadraticCurveTo(.07,-.75,.15,-.72);ctx.lineTo(.24,-.68);ctx.lineTo(.24,.62);ctx.quadraticCurveTo(.24,.72,.14,.72);ctx.lineTo(-.02,.72);ctx.quadraticCurveTo(-.11,.72,-.11,.62);ctx.lineTo(-.11,-.30);ctx.quadraticCurveTo(-.18,-.21,-.30,-.15);ctx.closePath()}else{ctx.moveTo(-.37,-.69);ctx.quadraticCurveTo(-.37,-.75,-.28,-.75);ctx.lineTo(.35,-.75);ctx.quadraticCurveTo(.42,-.75,.38,-.66);ctx.quadraticCurveTo(.04,-.12,-.05,.64);ctx.quadraticCurveTo(-.06,.73,-.16,.73);ctx.lineTo(-.28,.73);ctx.quadraticCurveTo(-.36,.73,-.34,.63);ctx.quadraticCurveTo(-.25,-.06,.10,-.52);ctx.lineTo(-.29,-.52);ctx.quadraticCurveTo(-.37,-.52,-.37,-.60);ctx.closePath()}}
 function glyph(cx,cy,s,num,angle,t,phase){let squash=.36+.64*Math.abs(Math.cos(angle)),flip=Math.cos(angle)<0?-1:1;
@@ -18,5 +18,16 @@ for(let b=0;b<7;b++){let yy=-.48+b*.15+.035*Math.sin(t*1.5+b+phase),shift=.055*M
 x.lineCap='round';x.strokeStyle='rgba(255,255,255,.90)';x.lineWidth=.026;x.beginPath();x.moveTo(-.17,-.55);x.quadraticCurveTo(-.25,-.12,-.17,.15);x.stroke();x.strokeStyle='rgba(80,205,255,.55)';x.lineWidth=.015;x.beginPath();x.moveTo(.16,-.48);x.quadraticCurveTo(.23,-.10,.16,.34);x.stroke();x.restore();
 // redraw crisp silhouette
 x.save();x.translate(cx,cy);x.scale(s*squash*flip,s);rounded(x,num);x.lineWidth=.026;x.strokeStyle='#101419';x.stroke();x.restore()}
-function frame(ms){let t=ms*.001;if(!drag)want+=.0033;rot+=(want-rot)*.055;x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);x.fillStyle='#fff';x.fillRect(0,0,w,h);let s=Math.min(w,h)*.31,cy=h*.50,gap=s*.68,cx=w*.5;glyph(cx-gap,cy,s,1,rot,t,0);glyph(cx,cy,s,1,rot+.05,t,.7);glyph(cx+gap,cy,s,7,rot+.10,t,1.4);requestAnimationFrame(frame)}requestAnimationFrame(frame);
+function frame(ms){let t=ms*.001;if(!drag)want+=.0033;rot+=(want-rot)*.055;x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);x.fillStyle='#fff';x.fillRect(0,0,w,h);let s=Math.min(w,h)*.31,cy=h*.50,gap=s*.68,cx=w*.5;glyph(cx-gap,cy,s,1,rot,t,0);glyph(cx,cy,s,1,rot+.05,t,.7);glyph(cx+gap,cy,s,7,rot+.10,t,1.4);
+// capture clean frame, then destroy it like an unstable analog transmission
+bx.setTransform(1,0,0,1,0,0);bx.clearRect(0,0,w,h);bx.drawImage(c,0,0,c.width,c.height,0,0,w,h);
+x.fillStyle='#fff';x.fillRect(0,0,w,h);
+let bands=34;for(let i=0;i<bands;i++){let sy=i*h/bands,sh=h/bands+2;let burst=Math.sin(t*2.7+i*8.13)+Math.sin(t*7.1+i*.77);let dx=burst*burst*burst*(8+46*(.5+.5*Math.sin(t*.91+i)));if((i+Math.floor(t*8))%11===0)dx*=4.5;x.globalAlpha=.78+.22*Math.sin(i*3.1+t*5);x.drawImage(bc,0,sy,w,sh,dx,sy,w,sh)}
+x.globalAlpha=1;
+// displaced duplicate channels / broken sync
+x.globalCompositeOperation='multiply';x.globalAlpha=.13;x.drawImage(bc,Math.sin(t*13)*17,0,w,h);x.globalCompositeOperation='screen';x.globalAlpha=.18;x.drawImage(bc,-Math.cos(t*9)*13,Math.sin(t*4)*5,w,h);x.globalCompositeOperation='source-over';x.globalAlpha=1;
+for(let i=0;i<22;i++){let yy=(Math.sin(i*91.7+t*(3+i%4))*.5+.5)*h,hh=1+(i%5);x.fillStyle=i%6===0?'rgba(0,235,255,.45)':i%9===0?'rgba(255,20,190,.36)':'rgba(0,0,0,.20)';x.fillRect(0,yy,w,hh)}
+// intermittent tracking tears obscure readability
+if(Math.sin(t*5.7)+Math.sin(t*11.3)>.9){for(let j=0;j<7;j++){let yy=(j*.137+.5+.t*.07)%1*h;x.fillStyle=j%2?'rgba(255,255,255,.72)':'rgba(8,10,12,.58)';x.fillRect(0,yy,w,3+Math.abs(Math.sin(t*17+j))*18)}}
+requestAnimationFrame(frame)}requestAnimationFrame(frame);
 </script></body></html>
