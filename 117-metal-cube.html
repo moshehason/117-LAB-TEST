@@ -11,4 +11,4 @@ x.save();x.clip();for(let k=0;k<18;k++){let yy=cy-s+(k/18)*s*2.2+Math.sin(t*2+k)
 }
 // engraved 117 on nearest visible center: deep cut illusion
 let fs=Math.min(w*.28,h*.22);x.save();x.translate(cx,cy);x.transform(Math.cos(yaw),0,-Math.sin(yaw)*.16,1,0,0);x.font='900 '+fs+'px Arial Black';x.textAlign='center';x.textBaseline='middle';x.lineJoin='round';for(let q=8;q>0;q--){x.strokeStyle='rgba(0,0,0,'+(0.035*q)+')';x.lineWidth=q*1.7;x.strokeText('117',q*.7,q*.45)}let cg=x.createLinearGradient(-fs,0,fs,0);cg.addColorStop(0,'#020304');cg.addColorStop(.32,'#707a80');cg.addColorStop(.5,'#080a0c');cg.addColorStop(.72,'#d9e3e6');cg.addColorStop(1,'#111418');x.fillStyle=cg;x.fillText('117',0,0);x.strokeStyle='rgba(255,255,255,.6)';x.lineWidth=1;x.strokeText('117',-1,-1);x.restore();requestAnimationFrame(frame)}requestAnimationFrame(frame);
-</script></body></html>
+</script><script src="117-audio.js"></script></body></html>
