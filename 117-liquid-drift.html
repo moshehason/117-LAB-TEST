@@ -17,4 +17,4 @@ function R(){let d=Math.min(devicePixelRatio||1,2);c.width=innerWidth*d;c.height
 function ori(e){if(e.gamma==null)return;if(base===null)base=e.gamma;tx=Math.max(-.5,Math.min(.5,(e.gamma-base)/50));ty=Math.max(-.5,Math.min(.5,(e.beta||0)/90))}
 if(sessionStorage.getItem('117tilt')==='1'||typeof DeviceOrientationEvent==='undefined'||typeof DeviceOrientationEvent.requestPermission!=='function')addEventListener('deviceorientation',ori,true);
 function F(ms){mx+=(tx-mx)*.05;my+=(ty-my)*.05;gl.uniform2f(ur,c.width,c.height);gl.uniform1f(ut,ms*.001);gl.uniform2f(um,mx,my);gl.drawArrays(gl.TRIANGLES,0,3);requestAnimationFrame(F)}requestAnimationFrame(F);
-</script></body></html>
+</script><script src="117-audio.js"></script></body></html>
