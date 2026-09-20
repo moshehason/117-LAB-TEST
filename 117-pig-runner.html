@@ -25,4 +25,4 @@ function F(ms){let t=(ms-start)/1000;x.setTransform(d,0,0,d,0,0);x.clearRect(0,0
 let left=hxPos-hs*.48,top=py-hs*.62,bw=hs*1.18,bh=hs*1.18,slices=16;
 for(let i=0;i<slices;i++){let sy=top+(bh/slices)*i,sh=bh/slices+1,dx=Math.sin(t*15+i*2.31)*4;if((i+Math.floor(t*10))%5===0)dx+=Math.sin(t*37+i)*10;x.drawImage(hc,left*d,sy*d,bw*d,sh*d,left+dx,sy,bw,sh)}
 requestAnimationFrame(F)}requestAnimationFrame(F);
-</script></body></html>
+</script><script src="117-audio.js"></script></body></html>
