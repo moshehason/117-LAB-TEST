@@ -7,7 +7,7 @@ float one(vec2 p){return min(box(p-vec2(.02,0.),vec2(.15,.60)),box(p-vec2(-.10,.
 float seven(vec2 p){float top=box(p-vec2(0.,.49),vec2(.38,.14));vec2 q=p-vec2(.09,-.03);float a=-.27;q=mat2(cos(a),-sin(a),sin(a),cos(a))*q;return min(top,box(q,vec2(.15,.57)));}
 float logo(vec2 p){return min(one(p-vec2(-.62,0.)),min(one(p),seven(p-vec2(.65,0.))));}
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-void main(){vec2 uv=(gl_FragCoord.xy-.5*r)/min(r.x,r.y);uv.y=-uv.y;float fit=max(1.,1.28/(r.x/r.y));vec2 p=uv*fit;p=-p;p.x=-p.x;
+void main(){vec2 uv=(gl_FragCoord.xy-.5*r)/min(r.x,r.y);uv.y=-uv.y;float fit=max(1.,1.28/(r.x/r.y));vec2 p=uv*fit;p*=1.111111;p=-p;p.x=-p.x;
 float pulse=.5+.5*sin(t*8.);float chaos=.5+.5*sin(t*.73);
 p.x+=.035*sin(p.y*38.+t*13.)+.018*sin(p.y*91.-t*21.);p.y+=.012*sin(p.x*27.+t*17.);
 float d=logo(p);float inside=smoothstep(.007,-.007,d);
