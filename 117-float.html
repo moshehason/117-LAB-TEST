@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>117 — FLOAT</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{
+    width:100%;height:100%;
+    overflow:hidden;
+    background:#ffffff;
+    font-family:Arial Black,Arial,sans-serif;
+    touch-action:none;
+  }
+
+  .stage{
+    position:absolute;inset:0;
+    display:grid;place-items:center;
+    perspective:900px;
+  }
+
+  .logo-wrap{
+    position:relative;
+    transform-style:preserve-3d;
+    animation:float 7s ease-in-out infinite;
+  }
+
+  .logo{
+    position:relative;
+    font-size:clamp(110px,28vw,260px);
+    font-weight:900;
+    letter-spacing:-0.06em;
+    line-height:0.85;
+    color:#111;
+    transform-style:preserve-3d;
+    animation:spin 14s linear infinite;
+    text-shadow:
+      0 0 20px rgba(0,0,0,0.08),
+      0 8px 30px rgba(0,0,0,0.12);
+  }
+
+  /* Glowing layers */
+  .logo::before,
+  .logo::after{
+    content:"117";
+    position:absolute;
+    inset:0;
+    font:inherit;
+    letter-spacing:inherit;
+    pointer-events:none;
+  }
+
+  /* Soft outer glow */
+  .logo::before{
+    color:transparent;
+    -webkit-text-stroke:2px rgba(0,0,0,0.06);
+    transform:translateZ(-28px) scale(1.04);
+    filter:blur(6px);
+    opacity:0.7;
+  }
+
+  /* Bright rim light */
+  .logo::after{
+    color:transparent;
+    -webkit-text-stroke:1.5px rgba(255,255,255,0.9);
+    transform:translateZ(12px);
+    opacity:0.9;
+    mix-blend-mode:overlay;
+  }
+
+  /* Extra depth layers via box for stronger 3D feel */
+  .depth{
+    position:absolute;
+    inset:0;
+    font:inherit;
+    letter-spacing:inherit;
+    color:transparent;
+    -webkit-text-stroke:1px rgba(0,0,0,0.07);
+    pointer-events:none;
+  }
+  .depth.d1{transform:translateZ(-8px);opacity:0.6}
+  .depth.d2{transform:translateZ(-16px);opacity:0.4}
+  .depth.d3{transform:translateZ(-24px);opacity:0.25}
+
+  @keyframes spin{
+    from{transform:rotateY(0deg) rotateX(8deg)}
+    to{transform:rotateY(360deg) rotateX(8deg)}
+  }
+
+  @keyframes float{
+    0%,100%{transform:translateY(0) rotateX(4deg)}
+    50%{transform:translateY(-18px) rotateX(-4deg)}
+  }
+
+  /* Soft floor shadow */
+  .shadow{
+    position:absolute;
+    left:50%;
+    top:58%;
+    width:55vw;
+    max-width:340px;
+    height:28px;
+    background:radial-gradient(ellipse,rgba(0,0,0,0.18) 0%,transparent 70%);
+    transform:translateX(-50%);
+    filter:blur(8px);
+    animation:shadowPulse 7s ease-in-out infinite;
+    pointer-events:none;
+  }
+
+  @keyframes shadowPulse{
+    0%,100%{transform:translateX(-50%) scale(1);opacity:0.7}
+    50%{transform:translateX(-50%) scale(0.85);opacity:0.45}
+  }
+
+  .tag,.hint{
+    position:fixed;
+    bottom:max(16px,env(safe-area-inset-bottom));
+    font:700 9px/1 Arial,sans-serif;
+    letter-spacing:.18em;
+    color:rgba(0,0,0,0.35);
+    pointer-events:none;
+    z-index:10;
+  }
+  .tag{left:18px}
+  .hint{right:18px}
+
+  /* Interactive tilt on pointer */
+  .logo-wrap.interactive{
+    transition:transform 0.6s cubic-bezier(0.22,1,0.36,1);
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="logo-wrap" id="wrap">
+      <div class="logo" id="logo">
+        117
+        <span class="depth d1">117</span>
+        <span class="depth d2">117</span>
+        <span class="depth d3">117</span>
+      </div>
+    </div>
+    <div class="shadow"></div>
+  </div>
+
+  <div class="tag">117 / FLOAT</div>
+  <div class="hint">MOVE · TOUCH</div>
+
+<script>
+  const wrap = document.getElementById('wrap');
+  const logo = document.getElementById('logo');
+  let targetRX = 8, targetRY = 0;
+  let currentRX = 8, currentRY = 0;
+  let pointerActive = false;
+
+  function onMove(e) {
+    const t = e.touches ? e.touches[0] : e;
+    const x = (t.clientX / innerWidth) * 2 - 1;
+    const y = (t.clientY / innerHeight) * 2 - 1;
+    targetRY = x * 38;
+    targetRX = 8 - y * 22;
+    pointerActive = true;
+  }
+
+  function onEnd() {
+    pointerActive = false;
+    // gently return
+    targetRX = 8;
+    targetRY = 0;
+  }
+
+  window.addEventListener('pointermove', onMove, {passive:true});
+  window.addEventListener('pointerdown', onMove, {passive:true});
+  window.addEventListener('pointerup', onEnd);
+  window.addEventListener('pointerleave', onEnd);
+  window.addEventListener('touchmove', onMove, {passive:true});
+  window.addEventListener('touchend', onEnd);
+
+  function loop() {
+    // Smooth follow
+    currentRX += (targetRX - currentRX) * 0.08;
+    currentRY += (targetRY - currentRY) * 0.08;
+
+    // Combine with the continuous spin
+    // We override the CSS animation transform for interactive control
+    const time = performance.now() * 0.001;
+    const spinY = time * 25.7; // degrees per second roughly matching 14s cycle
+
+    logo.style.transform = `
+      rotateY(${spinY + currentRY}deg)
+      rotateX(${currentRX}deg)
+    `;
+
+    requestAnimationFrame(loop);
+  }
+  loop();
+</script>
+<script src="117-audio.js"></script>
+</body>
+</html>
