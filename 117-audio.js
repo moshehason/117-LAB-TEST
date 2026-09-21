@@ -1,11 +1,9 @@
-/* 117 AUDIO — autonomous free mix
-   Sources: Web Speech (wisdom) + Wikimedia Commons real audio
-*/
+/* 117 AUDIO — mix of English + Hebrew strange wisdom + real samples */
 (() => {
   const path = (location.pathname.split('/').pop() || '').toLowerCase();
-  if (['117-pig-runner.html', '117-pig-signal.html', '117-pong.html'].includes(path)) return;
+  if (['117-pig-runner.html', '117-pig-signal.html', '117-pong.html', '117-chaos-catch.html'].includes(path)) return;
 
-  const WISDOM = [
+  const WISDOM_EN = [
     "One one seven. The number that finds you.",
     "Some numbers are chosen. This one chooses back.",
     "It appears on clocks. On receipts. On the wrong page.",
@@ -25,37 +23,38 @@
     "It is not superstition if it keeps being true.",
     "One one seven is the door that opens both ways.",
     "You were looking for meaning. The number was looking for you.",
-    "Count slowly. It is already ahead of you.",
-    "One one seven is older than the question.",
-    "The materials remember the number before the hand does.",
-    "It is not a code. It is a presence.",
-    "One one seven waits in the static between stations.",
-    "When everything else is noise, this number is still clear.",
-    "It does not need believers. Only witnesses.",
-    "One one seven is the last thing the room says before it goes quiet.",
-    "There is a version of you that already answered.",
-    "The number is patient. It has time.",
-    "One one seven was here before the building.",
-    "It does not knock. It is already inside.",
-    "The first time you saw it, you looked away.",
-    "One one seven does not arrive. It was waiting.",
-    "Some numbers measure. This one observes.",
-    "You can change the clocks. You cannot change this.",
-    "One one seven is the only honest thing in the room.",
-    "It has no opinion. It only continues.",
-    "The number does not care if you believe it.",
-    "One one seven is what remains when the story ends.",
-    "It has been counted more times than it has been understood."
+    "Count slowly. It is already ahead of you."
   ];
 
-  // Free real audio from Wikimedia Commons (stable direct links)
+  // Hebrew strange wisdom
+  const WISDOM_HE = [
+    "מאה שבע עשרה. המספר שמוצא אותך.",
+    "יש מספרים שבוחרים. זה בוחר בחזרה.",
+    "הוא מופיע על שעונים. על קבלות. בעמוד הלא נכון.",
+    "התעלם ממנו פעם אחת. הוא חוזר פעמיים.",
+    "מאה שבע עשרה זה לא שם. זו תדר.",
+    "העיר סופרת במספרים אחרים. זה סופר אותך.",
+    "כשהאורות מהבהבים מאה שבע עשרה פעמים, תקשיב.",
+    "זה אף פעם לא היה מקרי. זה אף פעם לא היה צירוף מקרים.",
+    "הקירות זוכרים. המספר לא שוכח.",
+    "אתה יכול לעזוב את החדר. המספר נשאר.",
+    "מאה שבע עשרה הוא המרווח בין מה שנאמר למה שהתכוונו.",
+    "הוא נהיה שקט יותר ככל שאתה שם לב אליו.",
+    "יש אנשים שאוספים אמנות. המספר הזה אוסף אנשים.",
+    "מאה שבע עשרה לא מסביר את עצמו.",
+    "ללילה יש מספר אהוב. אתה כבר יודע אותו.",
+    "זה לא אמונה טפלה אם זה ממשיך להיות אמת.",
+    "מאה שבע עשרה הוא הדלת שנפתחת לשני הכיוונים.",
+    "חיפשת משמעות. המספר חיפש אותך.",
+    "תספור לאט. הוא כבר לפניך.",
+    "מאה שבע עשרה היה כאן לפני הבניין."
+  ];
+
   const REAL = [
     { url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/4/40/LL-Q33890_%28nso%29-Mohau-117.wav/LL-Q33890_%28nso%29-Mohau-117.wav.mp3', vol: 0.15, dur: 3.5 },
     { url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/3/3a/En-us-hello.ogg/En-us-hello.ogg.mp3', vol: 0.12, dur: 1.5 },
     { url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/8/8a/En-us-yes.ogg/En-us-yes.ogg.mp3', vol: 0.13, dur: 1.2 },
     { url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/4/4c/En-us-no.ogg/En-us-no.ogg.mp3', vol: 0.12, dur: 1.1 },
-    { url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/0/0f/En-us-the.ogg/En-us-the.ogg.mp3', vol: 0.11, dur: 1.0 },
-    { url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/9/9f/En-us-and.ogg/En-us-and.ogg.mp3', vol: 0.11, dur: 1.0 },
     { url: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/' + encodeURIComponent('Come here, my child.ogg'), vol: 0.10, dur: 2.8 },
     { url: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/' + encodeURIComponent('Pig grunt - Erdie.ogg'), vol: 0.07, dur: 2.0 }
   ];
@@ -65,8 +64,12 @@
   let busy = false;
   let currentAudio = null;
 
-  function getVoice() {
+  function getVoice(lang) {
     const voices = speechSynthesis.getVoices();
+    if (lang === 'he') {
+      const he = voices.filter(v => /he|iw|hebrew/i.test(v.lang) || /hebrew|עברית/i.test(v.name));
+      if (he.length) return he[Math.floor(Math.random() * he.length)];
+    }
     const preferred = voices.filter(v =>
       /en(-|_)?(us|gb|uk|au)?/i.test(v.lang) &&
       (/daniel|alex|fred|samuel|google uk|microsoft|premium|neural|siri|david|james/i.test(v.name) || v.default)
@@ -79,13 +82,21 @@
   function speakWisdom() {
     if (!window.speechSynthesis || busy) return;
     speechSynthesis.cancel();
-    const phrase = WISDOM[Math.floor(Math.random() * WISDOM.length)];
+
+    // 50% Hebrew, 50% English
+    const useHe = Math.random() < 0.5;
+    const list = useHe ? WISDOM_HE : WISDOM_EN;
+    const phrase = list[Math.floor(Math.random() * list.length)];
     const utter = new SpeechSynthesisUtterance(phrase);
-    const voice = getVoice();
+    utter.lang = useHe ? 'he-IL' : 'en-US';
+
+    const voice = getVoice(useHe ? 'he' : 'en');
     if (voice) utter.voice = voice;
-    utter.rate = 0.75 + Math.random() * 0.28;
-    utter.pitch = 0.6 + Math.random() * 0.45;
-    utter.volume = 0.87;
+
+    utter.rate = 0.78 + Math.random() * 0.22;
+    utter.pitch = 0.65 + Math.random() * 0.4;
+    utter.volume = 0.88;
+
     busy = true;
     utter.onend = utter.onerror = () => { busy = false; };
     speechSynthesis.speak(utter);
@@ -121,10 +132,9 @@
 
   function trigger() {
     const now = performance.now();
-    if (now - lastPlay < 1300 || busy) return;
+    if (now - lastPlay < 1400 || busy) return;
     lastPlay = now;
-    // Fully random mix
-    if (Math.random() < 0.72) speakWisdom();
+    if (Math.random() < 0.78) speakWisdom();
     else playReal();
   }
 
