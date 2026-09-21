@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><title>MORPH DUST</title><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#fff}#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}</style></head><body><canvas id="c"></canvas><script>
+const c=document.getElementById('c'),g=c.getContext('2d'),TYPE='morph',FONT='Times New Roman';let W=0,H=0,D=1,targets=[],P=[],mx=0,my=0,touch=false;
+function size(){let vv=window.visualViewport;W=Math.round(vv?vv.width:document.documentElement.clientWidth);H=Math.round(vv?vv.height:document.documentElement.clientHeight);D=Math.min(devicePixelRatio||1,2);c.width=Math.round(W*D);c.height=Math.round(H*D);c.style.width=W+'px';c.style.height=H+'px';g.setTransform(D,0,0,D,0,0);build()}
+function build(){let m=document.createElement('canvas');m.width=W;m.height=H;let q=m.getContext('2d');q.textAlign='center';q.textBaseline='middle';q.fillStyle='#000';let fs=Math.floor(W*.22);q.font='900 '+fs+'px '+FONT;let tw=q.measureText('117').width;if(tw>W*.52){fs=Math.floor(fs*(W*.52/tw));q.font='900 '+fs+'px '+FONT}q.fillText('117',W*.5,H*.50);let im=q.getImageData(0,0,W,H).data;targets=[];for(let y=0;y<H;y+=3)for(let x=0;x<W;x+=3)if(im[(y*W+x)*4+3]>30)targets.push([x,y]);P=[];let N=TYPE==='worms'?150:TYPE==='ribbon'?700:TYPE==='boids'?1200:1900;for(let i=0;i<N;i++){let a=targets[(Math.random()*targets.length)|0]||[W/2,H/2];let seg=TYPE==='worms'?Array.from({length:8+((Math.random()*6)|0)},(_,j)=>({x:a[0]-j*2,y:a[1]})):null;P.push({x:a[0],y:a[1],tx:a[0],ty:a[1],vx:0,vy:0,z:Math.random()*6.28,s:.6+Math.random()*1.5,h:[],seg})}}
+function frame(ms){let t=ms*.001;g.fillStyle=TYPE==='ribbon'||TYPE==='worms'?'rgba(255,255,255,.28)':'#fff';g.fillRect(0,0,W,H);for(let i=0;i<P.length;i++){let p=P[i];if(Math.random()<.0015){let a=targets[(Math.random()*targets.length)|0];if(a){p.tx=a[0];p.ty=a[1]}}let dx=p.tx-p.x,dy=p.ty-p.y,d=Math.hypot(dx,dy)+1;p.vx+=dx*.003;p.vy+=dy*.003;
+if(TYPE==='vortex'){p.vx-=dy/d*.035;p.vy+=dx/d*.035}
+if(TYPE==='fluid'){p.vx+=Math.sin(t*1.7+p.z)*.025;p.vy+=Math.cos(t*1.4+p.z)*.025}
+if(TYPE==='sparks'){p.vx+=Math.sin(t*4+p.z)*.05;p.vy-=Math.abs(Math.cos(t*2+p.z))*.018}
+if(TYPE==='boids'){p.vx+=Math.cos(t+p.z)*.035;p.vy+=Math.sin(t*.8+p.z)*.035}
+if(TYPE==='morph'){let k=.5+.5*Math.sin(t*.6);p.vx+=dx*.003*k+Math.sin(t+p.z)*.02;p.vy+=dy*.003*k+Math.cos(t+p.z)*.02}
+if(TYPE==='ribbon'){p.vx+=Math.sin(t+p.z)*.03;p.vy+=Math.cos(t*.8+p.z)*.03}
+if(touch){let ax=p.x-mx,ay=p.y-my,ad=Math.hypot(ax,ay)+1;if(ad<100){p.vx+=ax/ad*(100-ad)*.018;p.vy+=ay/ad*(100-ad)*.018}}
+p.vx*=.94;p.vy*=.94;p.x+=p.vx;p.y+=p.vy;
+let hue=TYPE==='sparks'?28:TYPE==='boids'?285:TYPE==='vortex'?200:TYPE==='ribbon'?325:TYPE==='morph'?225:TYPE==='worms'?255:165;
+if(TYPE==='worms'){let s=p.seg;s[0].x=p.x;s[0].y=p.y;for(let j=1;j<s.length;j++){let a=s[j-1],b=s[j],sx=a.x-b.x,sy=a.y-b.y,sd=Math.hypot(sx,sy)||1,f=(sd-3.2)/sd*.5;b.x+=sx*f;b.y+=sy*f}g.beginPath();s.forEach((a,j)=>j?g.lineTo(a.x,a.y):g.moveTo(a.x,a.y));g.strokeStyle='hsla('+hue+',82%,38%,.75)';g.lineWidth=3;g.lineCap='round';g.stroke()}
+else if(TYPE==='ribbon'){p.h.push([p.x,p.y]);if(p.h.length>9)p.h.shift();g.beginPath();p.h.forEach((a,j)=>j?g.lineTo(a[0],a[1]):g.moveTo(a[0],a[1]));g.strokeStyle='hsla('+hue+',90%,45%,.5)';g.stroke()}
+else if(TYPE==='boids'){let a=Math.atan2(p.vy,p.vx);g.fillStyle='hsla('+hue+',85%,35%,.7)';g.beginPath();g.moveTo(p.x+Math.cos(a)*3,p.y+Math.sin(a)*3);g.lineTo(p.x+Math.cos(a+2.5)*2,p.y+Math.sin(a+2.5)*2);g.lineTo(p.x+Math.cos(a-2.5)*2,p.y+Math.sin(a-2.5)*2);g.fill()}
+else{g.fillStyle='hsla('+hue+',90%,38%,.62)';g.beginPath();g.arc(p.x,p.y,p.s,0,6.283);g.fill()}}
+requestAnimationFrame(frame)}
+function pos(e){let r=c.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top}c.addEventListener('pointerdown',e=>{touch=true;pos(e)});c.addEventListener('pointermove',pos);c.addEventListener('pointerup',()=>touch=false);c.addEventListener('pointercancel',()=>touch=false);addEventListener('resize',size);if(visualViewport)visualViewport.addEventListener('resize',size);size();requestAnimationFrame(frame);
+</script></body></html>
