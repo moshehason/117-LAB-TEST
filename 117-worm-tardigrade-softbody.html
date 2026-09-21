@@ -7,7 +7,7 @@ float sm(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(
 float s117(vec2 p){float d=9.;d=sm(d,sdCaps(p,vec2(-1.25,-.75),vec2(-1.25,.75),.16),.11);d=sm(d,sdCaps(p,vec2(-1.52,.48),vec2(-1.25,.75),.15),.1);d=sm(d,sdCaps(p,vec2(-.35,-.75),vec2(-.35,.75),.16),.11);d=sm(d,sdCaps(p,vec2(-.62,.48),vec2(-.35,.75),.15),.1);d=sm(d,sdCaps(p,vec2(.45,.72),vec2(1.35,.72),.16),.11);d=sm(d,sdCaps(p,vec2(1.35,.72),vec2(.72,-.76),.17),.12);return d;}
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+1.),f.x),f.y);}
-void main(){vec2 p=(gl_FragCoord.xy-.5*r)/r.y*3.75;float T=t*.42;
+void main(){vec2 p=(gl_FragCoord.xy-.5*r)/r.y*7.5;float T=t*.42;
 float breathe=1.+.075*sin(T*1.7)+.028*sin(T*.73);p/=breathe;
 p.x+=.045*sin(p.y*5.+T*1.2);p.y+=.035*sin(p.x*6.-T*.9);
 float d=s117(p);float n=noise(p*5.+vec2(T*.3,-T*.18));d+=.055*(n-.5);
