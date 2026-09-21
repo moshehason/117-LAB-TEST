@@ -1,8 +1,23 @@
-<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>117 Exploded Object</title><style>html,body{margin:0;height:100%;overflow:hidden;background:#f3f1ec}canvas{width:100%;height:100%;touch-action:none}.t{position:fixed;z-index:2;left:18px;top:18px;font:11px Arial;letter-spacing:3px}.j{position:fixed;z-index:2;right:18px;top:18px;writing-mode:vertical-rl;font:13px Arial;letter-spacing:4px}</style><div class=t>117 LAB / EXPLODED OBJECT</div><div class=j>百十七　分解／再構成</div><canvas id=c></canvas><script>
-const c=document.querySelector('#c'),x=c.getContext('2d');let W,H,dpr,parts=[],open=0,goal=0,ang=0,drag=0,lx=0;
-function size(){dpr=Math.min(devicePixelRatio,2);W=innerWidth;H=innerHeight;c.width=W*dpr;c.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0);build()}addEventListener('resize',size);
-function seg(ax,ay,bx,by,n){for(let i=0;i<n;i++){let q=i/(n-1),px=ax+(bx-ax)*q,py=ay+(by-ay)*q;parts.push({x:px,y:py,dx:(px-0.5)*(.8+Math.random()*1.8)+(Math.random()-.5)*.6,dy:(py-0.5)*(.8+Math.random()*1.8)+(Math.random()-.5)*.6,r:Math.random()*6})}}
-function build(){parts=[];seg(.18,.28,.27,.22,8);seg(.27,.22,.27,.75,25);seg(.39,.28,.48,.22,8);seg(.48,.22,.48,.75,25);seg(.59,.22,.83,.22,14);seg(.83,.22,.66,.75,27)}
-function draw(t){open+=(goal-open)*.065;x.clearRect(0,0,W,H);x.save();x.translate(W/2,H/2);x.rotate(ang);x.translate(-W/2,-H/2);let s=Math.min(W,H);for(let i=0;i<parts.length;i++){let p=parts[i],px=p.x*W+p.dx*s*open,py=p.y*H+p.dy*s*open;let hue=(i*4+t*.02)%360;x.save();x.translate(px,py);x.rotate(p.r*open);x.fillStyle=open>.04?'hsl('+hue+' 75% '+(18+open*35)+'%)':'#111';x.shadowBlur=open*14;x.shadowColor=x.fillStyle;x.fillRect(-s*.016,-s*.016,s*.032,s*.032);x.restore()}x.restore();requestAnimationFrame(draw)}requestAnimationFrame(draw);
-c.onpointerdown=e=>{drag=1;lx=e.clientX;c.setPointerCapture(e.pointerId)};c.onpointermove=e=>{if(drag){ang+=(e.clientX-lx)*.009;lx=e.clientX}};c.onpointerup=e=>{drag=0;goal=goal?0:1};size();
-</script>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>117 — Soft Object</title><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f7f6f2}canvas{display:block;width:100%;height:100%;touch-action:none}.mark{position:fixed;right:18px;top:18px;font:11px Arial,sans-serif;letter-spacing:.28em;writing-mode:vertical-rl;color:#111;opacity:.42;pointer-events:none}</style></head><body><div class="mark">百十七</div><script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+import {FontLoader} from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/FontLoader.js';
+import {TextGeometry} from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/geometries/TextGeometry.js';
+import {RoomEnvironment} from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/environments/RoomEnvironment.js';
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xf7f6f2);
+const camera=new THREE.PerspectiveCamera(31,innerWidth/innerHeight,.1,100);camera.position.set(0,.1,10.5);
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;document.body.prepend(renderer.domElement);
+const pmrem=new THREE.PMREMGenerator(renderer);scene.environment=pmrem.fromScene(new RoomEnvironment(),.04).texture;
+const key=new THREE.DirectionalLight(0xffffff,4);key.position.set(-3,5,6);scene.add(key);const rim=new THREE.DirectionalLight(0xc8d9ff,2.4);rim.position.set(5,-1,3);scene.add(rim);
+let object,base,drag=false,px=0,py=0,tx=.12,ty=-.16,press=0,pulse=0;
+new FontLoader().load('https://cdn.jsdelivr.net/npm/three@0.180.0/examples/fonts/helvetiker_bold.typeface.json',font=>{
+ const g=new TextGeometry('117',{font,size:2.65,depth:.92,curveSegments:18,bevelEnabled:true,bevelThickness:.14,bevelSize:.105,bevelSegments:10});g.center();g.computeVertexNormals();base=g.attributes.position.array.slice();
+ const m=new THREE.MeshPhysicalMaterial({color:0x141414,metalness:.52,roughness:.18,clearcoat:1,clearcoatRoughness:.11,iridescence:.22,iridescenceIOR:1.35});
+ object=new THREE.Mesh(g,m);object.rotation.set(tx,ty,0);scene.add(object);
+});
+function deform(t){if(!object)return;const a=object.geometry.attributes.position.array;const time=t*.001;for(let i=0;i<a.length;i+=3){const x=base[i],y=base[i+1],z=base[i+2];const wave=Math.sin(y*2.4+time*1.4)+Math.sin(x*1.7-time*.9)*.55;const breath=.025*Math.sin(time*1.15)+press*.075+pulse*.035;a[i]=x*(1+breath)+Math.sin(y*2+time)*press*.045;a[i+1]=y*(1+breath*.65)+wave*press*.035;a[i+2]=z+wave*(.025+press*.075)}object.geometry.attributes.position.needsUpdate=true;object.geometry.computeVertexNormals();press*=.94;pulse*=.965}
+renderer.domElement.addEventListener('pointerdown',e=>{drag=true;px=e.clientX;py=e.clientY;press=1;pulse=1;renderer.domElement.setPointerCapture(e.pointerId)});
+renderer.domElement.addEventListener('pointermove',e=>{if(!drag)return;ty+=(e.clientX-px)*.008;tx+=(e.clientY-py)*.006;px=e.clientX;py=e.clientY;press=Math.min(1,press+.08)});
+renderer.domElement.addEventListener('pointerup',()=>drag=false);
+function loop(t){requestAnimationFrame(loop);deform(t);if(object){object.rotation.x+=(tx-object.rotation.x)*.09;object.rotation.y+=(ty-object.rotation.y)*.09;if(!drag){ty+=.0012;object.position.y=Math.sin(t*.00075)*.08}}renderer.render(scene,camera)}requestAnimationFrame(loop);
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+</script></body></html>
