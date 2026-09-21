@@ -5,7 +5,17 @@ const sim=`precision highp float;varying vec2 v;uniform sampler2D s;uniform vec2
 vec2 q(vec2 u){return texture2D(s,u).rg;}void main(){vec2 z=q(v),n=q(v+vec2(0.,px.y)),so=q(v-vec2(0.,px.y)),e=q(v+vec2(px.x,0.)),w=q(v-vec2(px.x,0.));vec2 L=n+so+e+w-4.*z;float A=z.x,B=z.y;float f=.0367+.003*sin(t*.09),k=.0649+.002*cos(t*.07);float r=A*B*B;A+=.92*L.x-r+f*(1.-A);B+=.46*L.y+r-(k+f)*B;float d=distance(v,touch);B+=.24*smoothstep(.045,0.,d);gl_FragColor=vec4(clamp(A,0.,1.),clamp(B,0.,1.),0.,1.);}`;
 const out=`precision highp float;varying vec2 v;uniform sampler2D s;uniform vec2 res;uniform float t;
 float line(vec2 p,vec2 a,vec2 b,float r){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.);return smoothstep(r,r*.45,length(pa-ba*h));}
-void main(){vec2 p=v;float g=0.;g=max(g,line(p,vec2(.29,.25),vec2(.29,.76),.038));g=max(g,line(p,vec2(.47,.25),vec2(.47,.76),.038));g=max(g,line(p,vec2(.61,.75),vec2(.79,.75),.038));g=max(g,line(p,vec2(.79,.75),vec2(.66,.25),.038));vec2 z=texture2D(s,v).rg;float bio=z.y;float cells=smoothstep(.13,.62,bio)*g;float edge=smoothstep(.015,.055,g)-smoothstep(.055,.085,g);float pulse=.5+.5*sin(t*.35+bio*8.);vec3 col=mix(vec3(.015,.012,.01),vec3(.17,.045,.015),pulse*.28);col+=vec3(.72,.24,.035)*cells*.72+vec3(.12,.025,.008)*edge;float holes=smoothstep(.66,.88,bio)*g;col=mix(col,vec3(.94,.93,.89),holes*.8);gl_FragColor=vec4(col,1.);}`;
+void main(){vec2 p=v;float g=0.;g=max(g,line(p,vec2(.29,.25),vec2(.29,.76),.060));g=max(g,line(p,vec2(.47,.25),vec2(.47,.76),.060));g=max(g,line(p,vec2(.61,.75),vec2(.79,.75),.060));g=max(g,line(p,vec2(.79,.75),vec2(.66,.25),.060));vec2 z=texture2D(s,v).rg;float bio=z.y;float cells=smoothstep(.13,.62,bio)*g;float edge=smoothstep(.015,.055,g)-smoothstep(.055,.085,g);float pulse=.5+.5*sin(t*.35+bio*8.);float membrane=smoothstep(.08,.48,bio)*g;
+float vein=smoothstep(.30,.70,bio)*(1.-smoothstep(.72,.92,bio))*g;
+float glint=pow(clamp(.5+.5*sin(bio*34.+p.x*19.-t*.7),0.,1.),12.)*g;
+vec3 col=vec3(.965,.955,.93);
+vec3 flesh=mix(vec3(.16,.012,.045),vec3(.82,.035,.18),.35+.65*pulse);
+col=mix(col,flesh,.88*g);
+col+=vec3(.95,.12,.32)*membrane*.35;
+col+=vec3(.12,.005,.025)*vein*.42;
+col+=vec3(1.0,.78,.86)*glint*1.35;
+float holes=smoothstep(.70,.90,bio)*g;
+col=mix(col,vec3(.035,.002,.012),holes*.72);gl_FragColor=vec4(col,1.);}`;
 function sh(type,src){let x=gl.createShader(type);gl.shaderSource(x,src);gl.compileShader(x);return x}function pr(fs){let p=gl.createProgram();gl.attachShader(p,sh(gl.VERTEX_SHADER,vs));gl.attachShader(p,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(p);return p}
 const ps=pr(sim),po=pr(out),b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
 let tex=[],fb=[];for(let i=0;i<2;i++){tex[i]=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex[i]);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);fb[i]=gl.createFramebuffer();}
