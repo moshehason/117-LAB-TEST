@@ -1,0 +1,509 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>117 — THERMAL</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:#f5f4f0;touch-action:none}
+  canvas{display:block;width:100%;height:100%;position:absolute;inset:0}
+  #clean{
+    position:absolute;inset:0;display:grid;place-items:center;
+    background:#f5f4f0;z-index:5;transition:opacity 0.6s ease;
+  }
+  #clean.gone{opacity:0;pointer-events:none}
+  #clean .n{
+    font:900 clamp(100px,28vw,240px)/0.85 Arial Black,Arial,sans-serif;
+    letter-spacing:-0.06em;color:#111;
+    transition:color 0.25s, text-shadow 0.25s, transform 0.3s;
+    cursor:pointer;user-select:none;
+  }
+  #clean .n.hot{
+    color:#fff;
+    text-shadow:
+      0 0 20px #fff,
+      0 0 40px #ff0,
+      0 0 80px #f80,
+      0 0 120px #f40;
+    transform:scale(1.06);
+  }
+  .tag{
+    position:fixed;bottom:max(14px,env(safe-area-inset-bottom));left:16px;
+    font:700 9px/1 Arial,sans-serif;letter-spacing:.18em;
+    color:rgba(0,0,0,.3);z-index:20;pointer-events:none;
+    transition:color .5s;
+  }
+  .tag.thermal{color:rgba(180,220,255,.4)}
+</style>
+</head>
+<body>
+<div id="clean">
+  <div class="n" id="logo">117</div>
+</div>
+<canvas id="c"></canvas>
+<div class="tag" id="tag">117 / THERMAL</div>
+
+<script>
+/*
+  117 THERMAL JUNGLE
+  Clean white 117 → heat pulse → full thermal night jungle
+  Original thermal sensor aesthetic (no movie IP)
+*/
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d', { alpha: false });
+const clean = document.getElementById('clean');
+const logo = document.getElementById('logo');
+const tag = document.getElementById('tag');
+
+let W, H, D;
+let mode = 'clean'; // clean | heating | jungle | cooling
+let transition = 0; // 0..1
+let time = 0;
+let heatMap; // offscreen heat buffer
+let heatCtx;
+let pointer = { x: 0.5, y: 0.5, down: false, px: 0.5, py: 0.5 };
+let logoHeat = 0;
+let sensorPhase = 0;
+let exposure = 1;
+let scanY = 0;
+
+// Layered jungle elements (procedural, no external images)
+const layers = [];
+const NUM_LAYERS = 5;
+
+function resize() {
+  D = Math.min(devicePixelRatio || 1, 2);
+  W = canvas.width = innerWidth * D;
+  H = canvas.height = innerHeight * D;
+  canvas.style.width = innerWidth + 'px';
+  canvas.style.height = innerHeight + 'px';
+
+  // Heat feedback buffer (lower res for performance)
+  const hw = Math.floor(W / 3);
+  const hh = Math.floor(H / 3);
+  heatMap = document.createElement('canvas');
+  heatMap.width = hw;
+  heatMap.height = hh;
+  heatCtx = heatMap.getContext('2d');
+  heatCtx.fillStyle = '#000';
+  heatCtx.fillRect(0, 0, hw, hh);
+
+  buildLayers();
+}
+resize();
+addEventListener('resize', resize);
+
+function buildLayers() {
+  layers.length = 0;
+  for (let L = 0; L < NUM_LAYERS; L++) {
+    const depth = L / (NUM_LAYERS - 1); // 0 front → 1 back
+    const leaves = [];
+    const count = 14 + Math.floor((1 - depth) * 18);
+    for (let i = 0; i < count; i++) {
+      leaves.push({
+        x: Math.random(),
+        y: Math.random(),
+        w: 0.08 + Math.random() * 0.22,
+        h: 0.06 + Math.random() * 0.18,
+        rot: (Math.random() - 0.5) * 1.4,
+        phase: Math.random() * Math.PI * 2,
+        type: Math.floor(Math.random() * 3)
+      });
+    }
+    layers.push({ depth, leaves, parallax: 0.15 + depth * 0.55 });
+  }
+}
+
+// ——— Pointer ———
+function setPos(e) {
+  const t = e.touches ? e.touches[0] : e;
+  pointer.px = pointer.x;
+  pointer.py = pointer.y;
+  pointer.x = t.clientX / innerWidth;
+  pointer.y = t.clientY / innerHeight;
+}
+
+function onDown(e) {
+  setPos(e);
+  pointer.down = true;
+
+  if (mode === 'clean') {
+    // Start sequence
+    mode = 'heating';
+    logo.classList.add('hot');
+    logoHeat = 1;
+    setTimeout(() => {
+      mode = 'jungle';
+      clean.classList.add('gone');
+      tag.classList.add('thermal');
+      transition = 0;
+    }, 420);
+  } else if (mode === 'jungle') {
+    // Reheat 117 if near center
+    const dx = pointer.x - 0.5;
+    const dy = pointer.y - 0.5;
+    if (Math.sqrt(dx*dx + dy*dy) < 0.22) {
+      logoHeat = 1;
+    }
+  }
+}
+
+function onUp() {
+  pointer.down = false;
+}
+
+// Long press detection for exit
+let pressTimer = null;
+function startLongPress() {
+  clearTimeout(pressTimer);
+  pressTimer = setTimeout(() => {
+    if (mode === 'jungle' && pointer.down) {
+      mode = 'cooling';
+    }
+  }, 900);
+}
+function cancelLongPress() {
+  clearTimeout(pressTimer);
+}
+
+canvas.addEventListener('pointerdown', e => {
+  onDown(e);
+  startLongPress();
+  canvas.setPointerCapture?.(e.pointerId);
+});
+canvas.addEventListener('pointermove', e => {
+  if (pointer.down) setPos(e);
+});
+canvas.addEventListener('pointerup', () => { onUp(); cancelLongPress(); });
+canvas.addEventListener('pointercancel', () => { onUp(); cancelLongPress(); });
+
+// Also allow starting from the clean logo
+logo.addEventListener('pointerdown', e => {
+  e.stopPropagation();
+  onDown(e);
+  startLongPress();
+});
+
+// ——— Heat buffer ———
+function updateHeat(dt) {
+  const hw = heatMap.width;
+  const hh = heatMap.height;
+
+  // Cool everything slowly
+  heatCtx.fillStyle = 'rgba(0,0,0,0.045)';
+  heatCtx.fillRect(0, 0, hw, hh);
+
+  // Pointer heat trail
+  if (pointer.down && (mode === 'jungle' || mode === 'heating')) {
+    const x = pointer.x * hw;
+    const y = pointer.y * hh;
+    const px = pointer.px * hw;
+    const py = pointer.py * hh;
+    const dist = Math.hypot(x - px, y - py);
+    const strength = Math.min(1.4, 0.5 + dist * 0.08);
+
+    const g = heatCtx.createRadialGradient(x, y, 0, x, y, 18 * strength);
+    g.addColorStop(0, `rgba(255,255,255,${0.55 * strength})`);
+    g.addColorStop(0.4, `rgba(255,180,0,${0.25 * strength})`);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    heatCtx.fillStyle = g;
+    heatCtx.beginPath();
+    heatCtx.arc(x, y, 18 * strength, 0, Math.PI * 2);
+    heatCtx.fill();
+
+    // Trail line
+    if (dist > 2) {
+      heatCtx.strokeStyle = `rgba(255,200,50,${0.2 * strength})`;
+      heatCtx.lineWidth = 10 * strength;
+      heatCtx.lineCap = 'round';
+      heatCtx.beginPath();
+      heatCtx.moveTo(px, py);
+      heatCtx.lineTo(x, y);
+      heatCtx.stroke();
+    }
+  }
+
+  // 117 heat source in center
+  if (logoHeat > 0.05) {
+    const g = heatCtx.createRadialGradient(hw/2, hh/2, 0, hw/2, hh/2, 28 + logoHeat * 20);
+    g.addColorStop(0, `rgba(255,255,255,${0.7 * logoHeat})`);
+    g.addColorStop(0.35, `rgba(255,120,0,${0.35 * logoHeat})`);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    heatCtx.fillStyle = g;
+    heatCtx.beginPath();
+    heatCtx.arc(hw/2, hh/2, 28 + logoHeat * 20, 0, Math.PI * 2);
+    heatCtx.fill();
+  }
+}
+
+// Thermal color lookup (experimental sensor feel, not rainbow)
+function thermalColor(t, out) {
+  // t 0..1
+  t = Math.max(0, Math.min(1, t));
+  let r, g, b;
+  if (t < 0.15) {
+    // deep cold black-violet
+    const k = t / 0.15;
+    r = 5 + k * 20; g = 0 + k * 5; b = 15 + k * 40;
+  } else if (t < 0.35) {
+    // blue → cyan
+    const k = (t - 0.15) / 0.2;
+    r = 10 + k * 10; g = 20 + k * 100; b = 60 + k * 120;
+  } else if (t < 0.55) {
+    // cyan → green
+    const k = (t - 0.35) / 0.2;
+    r = 20 + k * 30; g = 120 + k * 80; b = 180 - k * 100;
+  } else if (t < 0.75) {
+    // green → yellow/orange
+    const k = (t - 0.55) / 0.2;
+    r = 50 + k * 180; g = 200 - k * 40; b = 80 - k * 60;
+  } else if (t < 0.9) {
+    // orange → red
+    const k = (t - 0.75) / 0.15;
+    r = 230 + k * 25; g = 160 - k * 100; b = 20 - k * 15;
+  } else {
+    // red → white hot
+    const k = (t - 0.9) / 0.1;
+    r = 255; g = 60 + k * 195; b = 20 + k * 235;
+  }
+  out[0] = r; out[1] = g; out[2] = b;
+}
+
+const _c = [0,0,0];
+
+function drawLeaf(ctx, leaf, scale, depth, heatBoost) {
+  const x = leaf.x * W + (pointer.x - 0.5) * 40 * depth * D;
+  const y = leaf.y * H + (pointer.y - 0.5) * 25 * depth * D;
+  const w = leaf.w * Math.min(W, H);
+  const h = leaf.h * Math.min(W, H);
+  const sway = Math.sin(time * (1.2 + depth) + leaf.phase) * 0.08;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(leaf.rot + sway);
+
+  // Base temperature from depth + noise + heat
+  let temp = 0.22 + (1 - depth) * 0.18 + heatBoost * 0.4;
+  temp += Math.sin(time * 2 + leaf.phase) * 0.03;
+
+  thermalColor(temp, _c);
+  ctx.fillStyle = `rgb(${_c[0]|0},${_c[1]|0},${_c[2]|0})`;
+
+  ctx.beginPath();
+  if (leaf.type === 0) {
+    // elongated leaf
+    ctx.ellipse(0, 0, w * 0.5, h * 0.5, 0, 0, Math.PI * 2);
+  } else if (leaf.type === 1) {
+    // broader
+    ctx.ellipse(0, 0, w * 0.55, h * 0.4, 0, 0, Math.PI * 2);
+  } else {
+    // pointed
+    ctx.moveTo(0, -h * 0.5);
+    ctx.quadraticCurveTo(w * 0.5, 0, 0, h * 0.5);
+    ctx.quadraticCurveTo(-w * 0.5, 0, 0, -h * 0.5);
+  }
+  ctx.fill();
+
+  // Vein (slightly cooler)
+  thermalColor(temp * 0.75, _c);
+  ctx.strokeStyle = `rgba(${_c[0]|0},${_c[1]|0},${_c[2]|0},0.5)`;
+  ctx.lineWidth = 1.2 * D;
+  ctx.beginPath();
+  ctx.moveTo(0, -h * 0.4);
+  ctx.lineTo(0, h * 0.4);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawJungle() {
+  // Sample heat map for boost near pointer / logo
+  // (simplified: use distance)
+
+  // Clear to cold
+  ctx.fillStyle = '#020108';
+  ctx.fillRect(0, 0, W, H);
+
+  // Draw layers back to front
+  for (let Li = layers.length - 1; Li >= 0; Li--) {
+    const layer = layers[Li];
+    const depth = layer.depth;
+
+    // Fog between layers
+    if (depth > 0.3) {
+      ctx.fillStyle = `rgba(0,5,20,${0.08 + depth * 0.12})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    for (const leaf of layer.leaves) {
+      // Heat boost if near pointer trail (approx)
+      const dx = leaf.x - pointer.x;
+      const dy = leaf.y - pointer.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      let boost = 0;
+      if (pointer.down && dist < 0.2) boost = (0.2 - dist) / 0.2;
+      // Logo heat influence
+      const ldx = leaf.x - 0.5;
+      const ldy = leaf.y - 0.5;
+      const ld = Math.sqrt(ldx*ldx + ldy*ldy);
+      if (ld < 0.25) boost = Math.max(boost, logoHeat * (1 - ld / 0.25) * 0.7);
+
+      drawLeaf(ctx, leaf, 1, depth, boost);
+    }
+  }
+
+  // Draw 117 in thermal
+  const pulse = 1 + Math.sin(time * 4) * 0.03 * logoHeat;
+  const fontSize = Math.min(W, H) * 0.22 * pulse;
+  ctx.save();
+  ctx.translate(W/2, H/2);
+  ctx.font = `900 ${fontSize}px Arial Black, Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  // Heat bloom behind number
+  if (logoHeat > 0.1) {
+    const bg = ctx.createRadialGradient(0, 0, 0, 0, 0, fontSize * 1.1);
+    thermalColor(0.7 + logoHeat * 0.3, _c);
+    bg.addColorStop(0, `rgba(${_c[0]},${_c[1]},${_c[2]},${0.35 * logoHeat})`);
+    bg.addColorStop(1, 'transparent');
+    ctx.fillStyle = bg;
+    ctx.beginPath();
+    ctx.arc(0, 0, fontSize * 1.1, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Number itself – hotter core
+  thermalColor(0.55 + logoHeat * 0.45, _c);
+  ctx.fillStyle = `rgb(${_c[0]|0},${_c[1]|0},${_c[2]|0})`;
+  ctx.shadowColor = `rgba(255,${100 + logoHeat*155},0,${0.5 * logoHeat})`;
+  ctx.shadowBlur = 30 * D * logoHeat;
+  ctx.fillText('117', 0, 0);
+  ctx.shadowBlur = 0;
+
+  // Slight edge shimmer
+  if (logoHeat > 0.3) {
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = `rgba(255,255,240,${0.15 * logoHeat})`;
+    ctx.fillText('117', (Math.random()-0.5)*2*D, (Math.random()-0.5)*2*D);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  ctx.restore();
+
+  // Sensor effects
+  drawSensorFX();
+}
+
+function drawSensorFX() {
+  // Scan line
+  scanY = (scanY + 1.5 * D) % H;
+  ctx.fillStyle = 'rgba(180,220,255,0.03)';
+  ctx.fillRect(0, scanY, W, 2 * D);
+
+  // Subtle grain
+  if (Math.random() < 0.4) {
+    ctx.fillStyle = 'rgba(255,255,255,0.015)';
+    for (let i = 0; i < 30; i++) {
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      ctx.fillRect(x, y, 1.5*D, 1.5*D);
+    }
+  }
+
+  // Occasional exposure flicker
+  if (Math.random() < 0.008) {
+    exposure = 0.7 + Math.random() * 0.6;
+  }
+  exposure += (1 - exposure) * 0.05;
+  if (Math.abs(exposure - 1) > 0.02) {
+    ctx.fillStyle = `rgba(0,0,0,${(1 - exposure) * 0.25})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // Vignette
+  const vig = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.7);
+  vig.addColorStop(0.55, 'transparent');
+  vig.addColorStop(1, 'rgba(0,0,10,0.45)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function drawHeatingPulse() {
+  // Brief white flash + expanding ring while transitioning
+  const p = Math.min(1, transition * 2);
+  ctx.fillStyle = `rgba(255,240,200,${0.15 * (1-p)})`;
+  ctx.fillRect(0, 0, W, H);
+
+  const r = Math.max(W, H) * p * 0.8;
+  const g = ctx.createRadialGradient(W/2, H/2, r * 0.3, W/2, H/2, r);
+  g.addColorStop(0, `rgba(255,200,50,${0.4 * (1-p)})`);
+  g.addColorStop(0.5, `rgba(255,80,0,${0.2 * (1-p)})`);
+  g.addColorStop(1, 'transparent');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(W/2, H/2, r, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function frame(ms) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.05, (ms - (frame.last || ms)) / 1000);
+  frame.last = ms;
+  time = ms * 0.001;
+
+  // Logo heat decay
+  if (mode === 'jungle' || mode === 'cooling') {
+    logoHeat *= 0.992;
+  }
+
+  if (mode === 'heating' || mode === 'jungle') {
+    transition = Math.min(1, transition + dt * 1.8);
+  }
+  if (mode === 'cooling') {
+    transition = Math.max(0, transition - dt * 0.7);
+    logoHeat *= 0.97;
+    if (transition <= 0.02) {
+      // Back to clean
+      mode = 'clean';
+      clean.classList.remove('gone');
+      logo.classList.remove('hot');
+      tag.classList.remove('thermal');
+      logoHeat = 0;
+      // Clear heat
+      heatCtx.fillStyle = '#000';
+      heatCtx.fillRect(0, 0, heatMap.width, heatMap.height);
+    }
+  }
+
+  updateHeat(dt);
+
+  if (mode === 'clean') {
+    // Canvas can stay idle / dark under the clean overlay
+    ctx.fillStyle = '#f5f4f0';
+    ctx.fillRect(0, 0, W, H);
+    return;
+  }
+
+  if (mode === 'heating') {
+    drawJungle();
+    drawHeatingPulse();
+    // Mix with white at start
+    ctx.fillStyle = `rgba(245,244,240,${1 - transition})`;
+    ctx.fillRect(0, 0, W, H);
+    return;
+  }
+
+  if (mode === 'jungle' || mode === 'cooling') {
+    drawJungle();
+    if (mode === 'cooling') {
+      ctx.fillStyle = `rgba(0,0,0,${1 - transition})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+  }
+}
+requestAnimationFrame(frame);
+</script>
+<script src="117-audio.js"></script>
+</body>
+</html>
