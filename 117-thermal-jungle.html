@@ -6,35 +6,42 @@
 <title>117 — THERMAL</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{width:100%;height:100%;overflow:hidden;background:#f5f4f0;touch-action:none}
+  html,body{width:100%;height:100%;overflow:hidden;background:#f4f3ef;touch-action:none}
   canvas{display:block;width:100%;height:100%;position:absolute;inset:0}
   #clean{
     position:absolute;inset:0;display:grid;place-items:center;
-    background:#f5f4f0;z-index:5;transition:opacity 0.6s ease;
+    background:#f4f3ef;z-index:5;
+    transition:opacity 0.5s ease;
   }
   #clean.gone{opacity:0;pointer-events:none}
   #clean .n{
-    font:900 clamp(100px,28vw,240px)/0.85 Arial Black,Arial,sans-serif;
-    letter-spacing:-0.06em;color:#111;
-    transition:color 0.25s, text-shadow 0.25s, transform 0.3s;
+    font:900 clamp(110px,30vw,260px)/0.85 Arial Black,Arial,sans-serif;
+    letter-spacing:-0.07em;color:#0a0a0a;
+    transition:color .2s, text-shadow .25s, transform .3s, filter .3s;
     cursor:pointer;user-select:none;
+    /* glossy liquid feel */
+    filter:drop-shadow(0 8px 16px rgba(0,0,0,.18));
   }
   #clean .n.hot{
-    color:#fff;
-    text-shadow:
-      0 0 20px #fff,
-      0 0 40px #ff0,
-      0 0 80px #f80,
-      0 0 120px #f40;
-    transform:scale(1.06);
+    color:#fffef5;
+    filter:drop-shadow(0 0 20px #fff) drop-shadow(0 0 50px #ff8a00) drop-shadow(0 0 90px #ff2a00);
+    transform:scale(1.07);
+    text-shadow:0 0 30px #ffcc66;
   }
   .tag{
     position:fixed;bottom:max(14px,env(safe-area-inset-bottom));left:16px;
     font:700 9px/1 Arial,sans-serif;letter-spacing:.18em;
-    color:rgba(0,0,0,.3);z-index:20;pointer-events:none;
+    color:rgba(0,0,0,.28);z-index:20;pointer-events:none;
     transition:color .5s;
   }
-  .tag.thermal{color:rgba(180,220,255,.4)}
+  .tag.thermal{color:rgba(160,210,255,.4)}
+  .hint{
+    position:fixed;bottom:max(14px,env(safe-area-inset-bottom));right:16px;
+    font:700 9px/1 Arial,sans-serif;letter-spacing:.15em;
+    color:rgba(0,0,0,.25);z-index:20;pointer-events:none;
+    transition:color .5s;
+  }
+  .hint.thermal{color:rgba(160,210,255,.35)}
 </style>
 </head>
 <body>
@@ -43,34 +50,38 @@
 </div>
 <canvas id="c"></canvas>
 <div class="tag" id="tag">117 / THERMAL</div>
+<div class="hint" id="hint">TAP 117</div>
 
 <script>
 /*
-  117 THERMAL JUNGLE
-  Clean white 117 → heat pulse → full thermal night jungle
-  Original thermal sensor aesthetic (no movie IP)
+  117 THERMAL JUNGLE — storyboard-aligned
+  1 Clean glossy 117
+  2 Touch → white-hot
+  3 Thermal pulse expands
+  4 Full night jungle in thermal vision
+  5 Depth + atmosphere
+  6 Touch leaves heat signatures
 */
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d', { alpha: false });
 const clean = document.getElementById('clean');
 const logo = document.getElementById('logo');
 const tag = document.getElementById('tag');
+const hint = document.getElementById('hint');
 
 let W, H, D;
 let mode = 'clean'; // clean | heating | jungle | cooling
-let transition = 0; // 0..1
+let transition = 0;
 let time = 0;
-let heatMap; // offscreen heat buffer
-let heatCtx;
+let heatMap, heatCtx;
 let pointer = { x: 0.5, y: 0.5, down: false, px: 0.5, py: 0.5 };
 let logoHeat = 0;
-let sensorPhase = 0;
+let pulseT = 0;
 let exposure = 1;
 let scanY = 0;
 
-// Layered jungle elements (procedural, no external images)
 const layers = [];
-const NUM_LAYERS = 5;
+const NUM_LAYERS = 6;
 
 function resize() {
   D = Math.min(devicePixelRatio || 1, 2);
@@ -79,9 +90,8 @@ function resize() {
   canvas.style.width = innerWidth + 'px';
   canvas.style.height = innerHeight + 'px';
 
-  // Heat feedback buffer (lower res for performance)
-  const hw = Math.floor(W / 3);
-  const hh = Math.floor(H / 3);
+  const hw = Math.max(160, Math.floor(W / 2.5));
+  const hh = Math.max(160, Math.floor(H / 2.5));
   heatMap = document.createElement('canvas');
   heatMap.width = hw;
   heatMap.height = hh;
@@ -97,25 +107,37 @@ addEventListener('resize', resize);
 function buildLayers() {
   layers.length = 0;
   for (let L = 0; L < NUM_LAYERS; L++) {
-    const depth = L / (NUM_LAYERS - 1); // 0 front → 1 back
+    const depth = L / (NUM_LAYERS - 1);
     const leaves = [];
-    const count = 14 + Math.floor((1 - depth) * 18);
+    const count = 18 + Math.floor((1 - depth) * 28);
     for (let i = 0; i < count; i++) {
       leaves.push({
         x: Math.random(),
         y: Math.random(),
-        w: 0.08 + Math.random() * 0.22,
-        h: 0.06 + Math.random() * 0.18,
-        rot: (Math.random() - 0.5) * 1.4,
+        w: 0.07 + Math.random() * 0.28,
+        h: 0.05 + Math.random() * 0.2,
+        rot: (Math.random() - 0.5) * 1.6,
         phase: Math.random() * Math.PI * 2,
-        type: Math.floor(Math.random() * 3)
+        type: Math.floor(Math.random() * 4),
+        baseTemp: 0.18 + Math.random() * 0.2 + (1 - depth) * 0.12
       });
     }
-    layers.push({ depth, leaves, parallax: 0.15 + depth * 0.55 });
+    // A few hanging vines
+    const vines = [];
+    if (depth < 0.7) {
+      for (let v = 0; v < 3 + Math.floor(Math.random() * 3); v++) {
+        vines.push({
+          x: Math.random(),
+          len: 0.25 + Math.random() * 0.45,
+          phase: Math.random() * 10,
+          thick: 0.008 + Math.random() * 0.012
+        });
+      }
+    }
+    layers.push({ depth, leaves, vines, parallax: 0.12 + depth * 0.6 });
   }
 }
 
-// ——— Pointer ———
 function setPos(e) {
   const t = e.touches ? e.touches[0] : e;
   pointer.px = pointer.x;
@@ -129,22 +151,23 @@ function onDown(e) {
   pointer.down = true;
 
   if (mode === 'clean') {
-    // Start sequence
     mode = 'heating';
     logo.classList.add('hot');
     logoHeat = 1;
+    pulseT = 0;
+    transition = 0;
     setTimeout(() => {
       mode = 'jungle';
       clean.classList.add('gone');
       tag.classList.add('thermal');
-      transition = 0;
-    }, 420);
+      hint.classList.add('thermal');
+      hint.textContent = 'TOUCH · LONG PRESS TO EXIT';
+    }, 480);
   } else if (mode === 'jungle') {
-    // Reheat 117 if near center
     const dx = pointer.x - 0.5;
     const dy = pointer.y - 0.5;
-    if (Math.sqrt(dx*dx + dy*dy) < 0.22) {
-      logoHeat = 1;
+    if (Math.sqrt(dx * dx + dy * dy) < 0.2) {
+      logoHeat = Math.min(1, logoHeat + 0.85);
     }
   }
 }
@@ -153,69 +176,55 @@ function onUp() {
   pointer.down = false;
 }
 
-// Long press detection for exit
 let pressTimer = null;
 function startLongPress() {
   clearTimeout(pressTimer);
   pressTimer = setTimeout(() => {
-    if (mode === 'jungle' && pointer.down) {
-      mode = 'cooling';
-    }
-  }, 900);
+    if (mode === 'jungle' && pointer.down) mode = 'cooling';
+  }, 850);
 }
-function cancelLongPress() {
-  clearTimeout(pressTimer);
-}
+function cancelLongPress() { clearTimeout(pressTimer); }
 
 canvas.addEventListener('pointerdown', e => {
-  onDown(e);
-  startLongPress();
+  onDown(e); startLongPress();
   canvas.setPointerCapture?.(e.pointerId);
 });
-canvas.addEventListener('pointermove', e => {
-  if (pointer.down) setPos(e);
-});
+canvas.addEventListener('pointermove', e => { if (pointer.down) setPos(e); });
 canvas.addEventListener('pointerup', () => { onUp(); cancelLongPress(); });
 canvas.addEventListener('pointercancel', () => { onUp(); cancelLongPress(); });
-
-// Also allow starting from the clean logo
 logo.addEventListener('pointerdown', e => {
   e.stopPropagation();
-  onDown(e);
-  startLongPress();
+  onDown(e); startLongPress();
 });
 
-// ——— Heat buffer ———
-function updateHeat(dt) {
-  const hw = heatMap.width;
-  const hh = heatMap.height;
+// ——— Heat feedback buffer ———
+function updateHeat() {
+  const hw = heatMap.width, hh = heatMap.height;
 
-  // Cool everything slowly
-  heatCtx.fillStyle = 'rgba(0,0,0,0.045)';
+  // Slow cool
+  heatCtx.fillStyle = 'rgba(0,0,0,0.038)';
   heatCtx.fillRect(0, 0, hw, hh);
 
-  // Pointer heat trail
   if (pointer.down && (mode === 'jungle' || mode === 'heating')) {
     const x = pointer.x * hw;
     const y = pointer.y * hh;
     const px = pointer.px * hw;
     const py = pointer.py * hh;
     const dist = Math.hypot(x - px, y - py);
-    const strength = Math.min(1.4, 0.5 + dist * 0.08);
+    const strength = Math.min(1.5, 0.55 + dist * 0.07);
 
-    const g = heatCtx.createRadialGradient(x, y, 0, x, y, 18 * strength);
-    g.addColorStop(0, `rgba(255,255,255,${0.55 * strength})`);
-    g.addColorStop(0.4, `rgba(255,180,0,${0.25 * strength})`);
+    const g = heatCtx.createRadialGradient(x, y, 0, x, y, 22 * strength);
+    g.addColorStop(0, `rgba(255,255,255,${0.65 * strength})`);
+    g.addColorStop(0.35, `rgba(255,160,20,${0.3 * strength})`);
     g.addColorStop(1, 'rgba(0,0,0,0)');
     heatCtx.fillStyle = g;
     heatCtx.beginPath();
-    heatCtx.arc(x, y, 18 * strength, 0, Math.PI * 2);
+    heatCtx.arc(x, y, 22 * strength, 0, Math.PI * 2);
     heatCtx.fill();
 
-    // Trail line
-    if (dist > 2) {
-      heatCtx.strokeStyle = `rgba(255,200,50,${0.2 * strength})`;
-      heatCtx.lineWidth = 10 * strength;
+    if (dist > 1.5) {
+      heatCtx.strokeStyle = `rgba(255,190,40,${0.28 * strength})`;
+      heatCtx.lineWidth = 12 * strength;
       heatCtx.lineCap = 'round';
       heatCtx.beginPath();
       heatCtx.moveTo(px, py);
@@ -224,226 +233,241 @@ function updateHeat(dt) {
     }
   }
 
-  // 117 heat source in center
-  if (logoHeat > 0.05) {
-    const g = heatCtx.createRadialGradient(hw/2, hh/2, 0, hw/2, hh/2, 28 + logoHeat * 20);
-    g.addColorStop(0, `rgba(255,255,255,${0.7 * logoHeat})`);
-    g.addColorStop(0.35, `rgba(255,120,0,${0.35 * logoHeat})`);
+  // Central 117 heat
+  if (logoHeat > 0.04) {
+    const g = heatCtx.createRadialGradient(hw/2, hh/2, 0, hw/2, hh/2, 32 + logoHeat * 26);
+    g.addColorStop(0, `rgba(255,255,255,${0.75 * logoHeat})`);
+    g.addColorStop(0.3, `rgba(255,100,0,${0.4 * logoHeat})`);
     g.addColorStop(1, 'rgba(0,0,0,0)');
     heatCtx.fillStyle = g;
     heatCtx.beginPath();
-    heatCtx.arc(hw/2, hh/2, 28 + logoHeat * 20, 0, Math.PI * 2);
+    heatCtx.arc(hw/2, hh/2, 32 + logoHeat * 26, 0, Math.PI * 2);
     heatCtx.fill();
   }
 }
 
-// Thermal color lookup (experimental sensor feel, not rainbow)
-function thermalColor(t, out) {
-  // t 0..1
+// Thermal palette — experimental sensor (storyboard look)
+function thermalRGB(t) {
   t = Math.max(0, Math.min(1, t));
   let r, g, b;
-  if (t < 0.15) {
-    // deep cold black-violet
-    const k = t / 0.15;
-    r = 5 + k * 20; g = 0 + k * 5; b = 15 + k * 40;
-  } else if (t < 0.35) {
-    // blue → cyan
-    const k = (t - 0.15) / 0.2;
-    r = 10 + k * 10; g = 20 + k * 100; b = 60 + k * 120;
-  } else if (t < 0.55) {
-    // cyan → green
-    const k = (t - 0.35) / 0.2;
-    r = 20 + k * 30; g = 120 + k * 80; b = 180 - k * 100;
-  } else if (t < 0.75) {
-    // green → yellow/orange
-    const k = (t - 0.55) / 0.2;
-    r = 50 + k * 180; g = 200 - k * 40; b = 80 - k * 60;
-  } else if (t < 0.9) {
-    // orange → red
-    const k = (t - 0.75) / 0.15;
-    r = 230 + k * 25; g = 160 - k * 100; b = 20 - k * 15;
+  if (t < 0.12) {
+    const k = t / 0.12;
+    r = 2 + k * 18; g = 0; b = 12 + k * 45;
+  } else if (t < 0.28) {
+    const k = (t - 0.12) / 0.16;
+    r = 8; g = 10 + k * 90; b = 55 + k * 130;
+  } else if (t < 0.48) {
+    const k = (t - 0.28) / 0.2;
+    r = 15 + k * 40; g = 100 + k * 100; b = 185 - k * 90;
+  } else if (t < 0.68) {
+    const k = (t - 0.48) / 0.2;
+    r = 55 + k * 170; g = 200 - k * 30; b = 95 - k * 70;
+  } else if (t < 0.85) {
+    const k = (t - 0.68) / 0.17;
+    r = 225 + k * 30; g = 170 - k * 110; b = 25 - k * 20;
   } else {
-    // red → white hot
-    const k = (t - 0.9) / 0.1;
-    r = 255; g = 60 + k * 195; b = 20 + k * 235;
+    const k = (t - 0.85) / 0.15;
+    r = 255; g = 60 + k * 195; b = 15 + k * 240;
   }
-  out[0] = r; out[1] = g; out[2] = b;
+  return [r, g, b];
 }
 
-const _c = [0,0,0];
-
-function drawLeaf(ctx, leaf, scale, depth, heatBoost) {
-  const x = leaf.x * W + (pointer.x - 0.5) * 40 * depth * D;
-  const y = leaf.y * H + (pointer.y - 0.5) * 25 * depth * D;
+function drawLeaf(leaf, depth) {
+  const par = (pointer.x - 0.5) * 50 * depth * D;
+  const parY = (pointer.y - 0.5) * 30 * depth * D;
+  const x = leaf.x * W + par;
+  const y = leaf.y * H + parY;
   const w = leaf.w * Math.min(W, H);
   const h = leaf.h * Math.min(W, H);
-  const sway = Math.sin(time * (1.2 + depth) + leaf.phase) * 0.08;
+  const sway = Math.sin(time * (1.1 + depth * 0.8) + leaf.phase) * 0.09;
+
+  // Sample approximate heat boost from distance to pointer / logo
+  let boost = 0;
+  const dx = leaf.x - pointer.x, dy = leaf.y - pointer.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (pointer.down && dist < 0.22) boost = Math.max(boost, (0.22 - dist) / 0.22 * 0.9);
+  const ldx = leaf.x - 0.5, ldy = leaf.y - 0.5;
+  const ld = Math.sqrt(ldx * ldx + ldy * ldy);
+  if (ld < 0.28) boost = Math.max(boost, logoHeat * (1 - ld / 0.28) * 0.75);
+
+  let temp = leaf.baseTemp + boost * 0.55 + Math.sin(time * 2.2 + leaf.phase) * 0.025;
+  const [r, g, b] = thermalRGB(temp);
 
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(leaf.rot + sway);
-
-  // Base temperature from depth + noise + heat
-  let temp = 0.22 + (1 - depth) * 0.18 + heatBoost * 0.4;
-  temp += Math.sin(time * 2 + leaf.phase) * 0.03;
-
-  thermalColor(temp, _c);
-  ctx.fillStyle = `rgb(${_c[0]|0},${_c[1]|0},${_c[2]|0})`;
+  ctx.fillStyle = `rgb(${r|0},${g|0},${b|0})`;
 
   ctx.beginPath();
   if (leaf.type === 0) {
-    // elongated leaf
-    ctx.ellipse(0, 0, w * 0.5, h * 0.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, w * 0.5, h * 0.48, 0, 0, Math.PI * 2);
   } else if (leaf.type === 1) {
-    // broader
-    ctx.ellipse(0, 0, w * 0.55, h * 0.4, 0, 0, Math.PI * 2);
-  } else {
-    // pointed
+    ctx.ellipse(0, 0, w * 0.55, h * 0.38, 0, 0, Math.PI * 2);
+  } else if (leaf.type === 2) {
     ctx.moveTo(0, -h * 0.5);
-    ctx.quadraticCurveTo(w * 0.5, 0, 0, h * 0.5);
-    ctx.quadraticCurveTo(-w * 0.5, 0, 0, -h * 0.5);
+    ctx.quadraticCurveTo(w * 0.55, 0, 0, h * 0.5);
+    ctx.quadraticCurveTo(-w * 0.55, 0, 0, -h * 0.5);
+  } else {
+    // compound / multi-lobe feel
+    ctx.ellipse(-w * 0.15, 0, w * 0.35, h * 0.4, -0.3, 0, Math.PI * 2);
+    ctx.ellipse(w * 0.15, 0, w * 0.35, h * 0.4, 0.3, 0, Math.PI * 2);
   }
   ctx.fill();
 
-  // Vein (slightly cooler)
-  thermalColor(temp * 0.75, _c);
-  ctx.strokeStyle = `rgba(${_c[0]|0},${_c[1]|0},${_c[2]|0},0.5)`;
-  ctx.lineWidth = 1.2 * D;
+  // Cooler vein
+  const [vr, vg, vb] = thermalRGB(temp * 0.72);
+  ctx.strokeStyle = `rgba(${vr|0},${vg|0},${vb|0},0.45)`;
+  ctx.lineWidth = 1.1 * D;
   ctx.beginPath();
-  ctx.moveTo(0, -h * 0.4);
-  ctx.lineTo(0, h * 0.4);
+  ctx.moveTo(0, -h * 0.38);
+  ctx.lineTo(0, h * 0.38);
   ctx.stroke();
-
   ctx.restore();
 }
 
-function drawJungle() {
-  // Sample heat map for boost near pointer / logo
-  // (simplified: use distance)
+function drawVine(v, depth) {
+  const par = (pointer.x - 0.5) * 40 * depth * D;
+  const x = v.x * W + par;
+  const top = (0.02 + Math.sin(time * 0.4 + v.phase) * 0.02) * H;
+  const len = v.len * H;
+  const [r, g, b] = thermalRGB(0.2 + depth * 0.1);
+  ctx.strokeStyle = `rgb(${r|0},${g|0},${b|0})`;
+  ctx.lineWidth = v.thick * Math.min(W, H);
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x, top);
+  const midX = x + Math.sin(time * 0.7 + v.phase) * 18 * D;
+  ctx.quadraticCurveTo(midX, top + len * 0.5, x + Math.sin(v.phase) * 10 * D, top + len);
+  ctx.stroke();
+}
 
-  // Clear to cold
-  ctx.fillStyle = '#020108';
+function drawJungle() {
+  // Deep cold base
+  ctx.fillStyle = '#010008';
   ctx.fillRect(0, 0, W, H);
 
-  // Draw layers back to front
+  // Soft ambient gradient (cooler at edges)
+  const amb = ctx.createRadialGradient(W/2, H*0.45, 0, W/2, H/2, Math.max(W,H)*0.75);
+  amb.addColorStop(0, 'rgba(0,20,40,0.25)');
+  amb.addColorStop(1, 'rgba(0,0,5,0.6)');
+  ctx.fillStyle = amb;
+  ctx.fillRect(0, 0, W, H);
+
   for (let Li = layers.length - 1; Li >= 0; Li--) {
     const layer = layers[Li];
     const depth = layer.depth;
 
-    // Fog between layers
-    if (depth > 0.3) {
-      ctx.fillStyle = `rgba(0,5,20,${0.08 + depth * 0.12})`;
+    // Inter-layer fog
+    if (depth > 0.25) {
+      ctx.fillStyle = `rgba(0,8,25,${0.07 + depth * 0.11})`;
       ctx.fillRect(0, 0, W, H);
     }
 
-    for (const leaf of layer.leaves) {
-      // Heat boost if near pointer trail (approx)
-      const dx = leaf.x - pointer.x;
-      const dy = leaf.y - pointer.y;
-      const dist = Math.sqrt(dx*dx + dy*dy);
-      let boost = 0;
-      if (pointer.down && dist < 0.2) boost = (0.2 - dist) / 0.2;
-      // Logo heat influence
-      const ldx = leaf.x - 0.5;
-      const ldy = leaf.y - 0.5;
-      const ld = Math.sqrt(ldx*ldx + ldy*ldy);
-      if (ld < 0.25) boost = Math.max(boost, logoHeat * (1 - ld / 0.25) * 0.7);
-
-      drawLeaf(ctx, leaf, 1, depth, boost);
-    }
+    for (const v of layer.vines) drawVine(v, depth);
+    for (const leaf of layer.leaves) drawLeaf(leaf, depth);
   }
 
-  // Draw 117 in thermal
-  const pulse = 1 + Math.sin(time * 4) * 0.03 * logoHeat;
-  const fontSize = Math.min(W, H) * 0.22 * pulse;
+  // ——— 117 in thermal ———
+  const pulse = 1 + Math.sin(time * 4.5) * 0.035 * Math.max(0.3, logoHeat);
+  const fontSize = Math.min(W, H) * 0.2 * pulse;
   ctx.save();
-  ctx.translate(W/2, H/2);
+  ctx.translate(W / 2, H / 2);
+
+  // Bloom
+  if (logoHeat > 0.08) {
+    const bg = ctx.createRadialGradient(0, 0, 0, 0, 0, fontSize * 1.25);
+    const [br, bgc, bb] = thermalRGB(0.75 + logoHeat * 0.25);
+    bg.addColorStop(0, `rgba(${br},${bgc},${bb},${0.4 * logoHeat})`);
+    bg.addColorStop(0.5, `rgba(255,80,0,${0.12 * logoHeat})`);
+    bg.addColorStop(1, 'transparent');
+    ctx.fillStyle = bg;
+    ctx.beginPath();
+    ctx.arc(0, 0, fontSize * 1.25, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   ctx.font = `900 ${fontSize}px Arial Black, Arial`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  // Heat bloom behind number
-  if (logoHeat > 0.1) {
-    const bg = ctx.createRadialGradient(0, 0, 0, 0, 0, fontSize * 1.1);
-    thermalColor(0.7 + logoHeat * 0.3, _c);
-    bg.addColorStop(0, `rgba(${_c[0]},${_c[1]},${_c[2]},${0.35 * logoHeat})`);
-    bg.addColorStop(1, 'transparent');
-    ctx.fillStyle = bg;
-    ctx.beginPath();
-    ctx.arc(0, 0, fontSize * 1.1, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // Number itself – hotter core
-  thermalColor(0.55 + logoHeat * 0.45, _c);
-  ctx.fillStyle = `rgb(${_c[0]|0},${_c[1]|0},${_c[2]|0})`;
-  ctx.shadowColor = `rgba(255,${100 + logoHeat*155},0,${0.5 * logoHeat})`;
-  ctx.shadowBlur = 30 * D * logoHeat;
+  const [nr, ng, nb] = thermalRGB(0.58 + logoHeat * 0.42);
+  ctx.fillStyle = `rgb(${nr|0},${ng|0},${nb|0})`;
+  ctx.shadowColor = `rgba(255,${90 + logoHeat * 160},0,${0.55 * logoHeat})`;
+  ctx.shadowBlur = 28 * D * logoHeat;
   ctx.fillText('117', 0, 0);
   ctx.shadowBlur = 0;
 
-  // Slight edge shimmer
-  if (logoHeat > 0.3) {
+  // Hot core highlight
+  if (logoHeat > 0.4) {
     ctx.globalCompositeOperation = 'lighter';
-    ctx.fillStyle = `rgba(255,255,240,${0.15 * logoHeat})`;
-    ctx.fillText('117', (Math.random()-0.5)*2*D, (Math.random()-0.5)*2*D);
+    ctx.fillStyle = `rgba(255,255,240,${0.2 * logoHeat})`;
+    ctx.fillText('117', (Math.random() - 0.5) * 2.5 * D, (Math.random() - 0.5) * 2.5 * D);
     ctx.globalCompositeOperation = 'source-over';
   }
   ctx.restore();
 
-  // Sensor effects
+  // Overlay heat map (soft) for trails
+  ctx.save();
+  ctx.globalAlpha = 0.35;
+  ctx.globalCompositeOperation = 'screen';
+  ctx.drawImage(heatMap, 0, 0, W, H);
+  ctx.restore();
+
   drawSensorFX();
 }
 
 function drawSensorFX() {
-  // Scan line
-  scanY = (scanY + 1.5 * D) % H;
-  ctx.fillStyle = 'rgba(180,220,255,0.03)';
-  ctx.fillRect(0, scanY, W, 2 * D);
+  // Horizontal scan
+  scanY = (scanY + 1.8 * D) % H;
+  ctx.fillStyle = 'rgba(170,220,255,0.035)';
+  ctx.fillRect(0, scanY, W, 2.2 * D);
 
-  // Subtle grain
-  if (Math.random() < 0.4) {
-    ctx.fillStyle = 'rgba(255,255,255,0.015)';
-    for (let i = 0; i < 30; i++) {
-      const x = Math.random() * W;
-      const y = Math.random() * H;
-      ctx.fillRect(x, y, 1.5*D, 1.5*D);
+  // Fine grain
+  if (Math.random() < 0.5) {
+    ctx.fillStyle = 'rgba(255,255,255,0.012)';
+    for (let i = 0; i < 40; i++) {
+      ctx.fillRect(Math.random() * W, Math.random() * H, 1.2 * D, 1.2 * D);
     }
   }
 
-  // Occasional exposure flicker
-  if (Math.random() < 0.008) {
-    exposure = 0.7 + Math.random() * 0.6;
-  }
-  exposure += (1 - exposure) * 0.05;
-  if (Math.abs(exposure - 1) > 0.02) {
-    ctx.fillStyle = `rgba(0,0,0,${(1 - exposure) * 0.25})`;
+  // Rare exposure shift
+  if (Math.random() < 0.007) exposure = 0.65 + Math.random() * 0.7;
+  exposure += (1 - exposure) * 0.04;
+  if (Math.abs(exposure - 1) > 0.03) {
+    ctx.fillStyle = `rgba(0,0,0,${(1 - exposure) * 0.22})`;
     ctx.fillRect(0, 0, W, H);
   }
 
   // Vignette
-  const vig = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.7);
-  vig.addColorStop(0.55, 'transparent');
-  vig.addColorStop(1, 'rgba(0,0,10,0.45)');
+  const vig = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W, H) * 0.72);
+  vig.addColorStop(0.5, 'transparent');
+  vig.addColorStop(1, 'rgba(0,0,12,0.5)');
   ctx.fillStyle = vig;
   ctx.fillRect(0, 0, W, H);
 }
 
 function drawHeatingPulse() {
-  // Brief white flash + expanding ring while transitioning
-  const p = Math.min(1, transition * 2);
-  ctx.fillStyle = `rgba(255,240,200,${0.15 * (1-p)})`;
-  ctx.fillRect(0, 0, W, H);
+  pulseT = Math.min(1, pulseT + 0.035);
+  const p = pulseT;
 
-  const r = Math.max(W, H) * p * 0.8;
-  const g = ctx.createRadialGradient(W/2, H/2, r * 0.3, W/2, H/2, r);
-  g.addColorStop(0, `rgba(255,200,50,${0.4 * (1-p)})`);
-  g.addColorStop(0.5, `rgba(255,80,0,${0.2 * (1-p)})`);
+  // Expanding thermal shockwave
+  const r = Math.max(W, H) * p * 0.95;
+  const g = ctx.createRadialGradient(W/2, H/2, r * 0.15, W/2, H/2, r);
+  g.addColorStop(0, `rgba(255,255,200,${0.5 * (1 - p)})`);
+  g.addColorStop(0.25, `rgba(255,120,20,${0.35 * (1 - p)})`);
+  g.addColorStop(0.55, `rgba(255,40,0,${0.18 * (1 - p)})`);
   g.addColorStop(1, 'transparent');
   ctx.fillStyle = g;
   ctx.beginPath();
   ctx.arc(W/2, H/2, r, 0, Math.PI * 2);
   ctx.fill();
+
+  // Secondary ring
+  ctx.strokeStyle = `rgba(255,200,80,${0.4 * (1 - p)})`;
+  ctx.lineWidth = 3 * D * (1 - p);
+  ctx.beginPath();
+  ctx.arc(W/2, H/2, r * 0.7, 0, Math.PI * 2);
+  ctx.stroke();
 }
 
 function frame(ms) {
@@ -452,35 +476,29 @@ function frame(ms) {
   frame.last = ms;
   time = ms * 0.001;
 
-  // Logo heat decay
-  if (mode === 'jungle' || mode === 'cooling') {
-    logoHeat *= 0.992;
-  }
+  if (mode === 'jungle' || mode === 'cooling') logoHeat *= 0.993;
+  if (mode === 'heating' || mode === 'jungle') transition = Math.min(1, transition + dt * 1.6);
 
-  if (mode === 'heating' || mode === 'jungle') {
-    transition = Math.min(1, transition + dt * 1.8);
-  }
   if (mode === 'cooling') {
-    transition = Math.max(0, transition - dt * 0.7);
-    logoHeat *= 0.97;
+    transition = Math.max(0, transition - dt * 0.65);
+    logoHeat *= 0.96;
     if (transition <= 0.02) {
-      // Back to clean
       mode = 'clean';
       clean.classList.remove('gone');
       logo.classList.remove('hot');
       tag.classList.remove('thermal');
+      hint.classList.remove('thermal');
+      hint.textContent = 'TAP 117';
       logoHeat = 0;
-      // Clear heat
       heatCtx.fillStyle = '#000';
       heatCtx.fillRect(0, 0, heatMap.width, heatMap.height);
     }
   }
 
-  updateHeat(dt);
+  updateHeat();
 
   if (mode === 'clean') {
-    // Canvas can stay idle / dark under the clean overlay
-    ctx.fillStyle = '#f5f4f0';
+    ctx.fillStyle = '#f4f3ef';
     ctx.fillRect(0, 0, W, H);
     return;
   }
@@ -488,8 +506,7 @@ function frame(ms) {
   if (mode === 'heating') {
     drawJungle();
     drawHeatingPulse();
-    // Mix with white at start
-    ctx.fillStyle = `rgba(245,244,240,${1 - transition})`;
+    ctx.fillStyle = `rgba(244,243,239,${Math.max(0, 1 - transition * 1.3)})`;
     ctx.fillRect(0, 0, W, H);
     return;
   }
