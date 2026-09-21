@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>117 — WEIRD GIFS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{
+    width:100%;height:100%;overflow:hidden;
+    background:#111;color:#fff;
+    font-family:Arial Black,Arial,sans-serif;
+    touch-action:none;
+  }
+  .stage{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+  }
+  .gif-layer{
+    position:absolute;
+    pointer-events:none;
+    opacity:0.85;
+    mix-blend-mode:screen;
+    transition:transform 0.3s ease;
+  }
+  .logo{
+    position:relative;z-index:10;
+    font-size:clamp(80px,22vw,200px);
+    font-weight:900;
+    letter-spacing:-0.06em;
+    color:#fff;
+    text-shadow:0 0 30px #ff0, 0 0 60px #f0f, 0 0 90px #0ff;
+    animation:logoPulse 2.5s ease-in-out infinite;
+    user-select:none;
+  }
+  @keyframes logoPulse{
+    0%,100%{transform:scale(1) rotate(-2deg);filter:hue-rotate(0deg)}
+    50%{transform:scale(1.08) rotate(2deg);filter:hue-rotate(40deg)}
+  }
+  .tag,.hint{
+    position:fixed;bottom:max(14px,env(safe-area-inset-bottom));
+    font:700 9px/1 Arial,sans-serif;letter-spacing:.18em;
+    color:rgba(255,255,255,.4);z-index:20;pointer-events:none;
+  }
+  .tag{left:16px}
+  .hint{right:16px}
+</style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div class="logo" id="logo">117</div>
+  </div>
+  <div class="tag">117 / WEIRD GIFS</div>
+  <div class="hint">TAP ANYWHERE</div>
+
+<script>
+// Public domain / free animated gifs from Wikimedia Commons
+const GIFS = [
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Animated_GIF_from_the_1919_Feline_folies_by_Pat_Sullivan.gif/200px-Animated_GIF_from_the_1919_Feline_folies_by_Pat_Sullivan.gif',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Cat_fall_150x300_6fps.gif/150px-Cat_fall_150x300_6fps.gif',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Cartoon_Cat_Running.gif/131px-Cartoon_Cat_Running.gif',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Cat_tail_ani.gif/91px-Cat_tail_ani.gif',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Neko_animated.gif/32px-Neko_animated.gif',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Mura.gif/128px-Mura.gif'
+];
+
+const stage = document.getElementById('stage');
+const logo = document.getElementById('logo');
+const layers = [];
+
+function spawnGif() {
+  const img = document.createElement('img');
+  img.src = GIFS[Math.floor(Math.random() * GIFS.length)];
+  img.className = 'gif-layer';
+  img.alt = 'weird';
+
+  const size = 80 + Math.random() * 160;
+  img.style.width = size + 'px';
+  img.style.left = (Math.random() * 80 + 5) + '%';
+  img.style.top = (Math.random() * 70 + 10) + '%';
+  img.style.transform = `rotate(${(Math.random()-0.5)*60}deg) scale(${0.7 + Math.random()*0.8})`;
+  img.style.opacity = 0.5 + Math.random() * 0.5;
+
+  stage.appendChild(img);
+  layers.push(img);
+
+  // Remove after a while so it doesn't lag
+  setTimeout(() => {
+    img.style.transition = 'opacity 0.8s';
+    img.style.opacity = '0';
+    setTimeout(() => img.remove(), 900);
+  }, 4000 + Math.random() * 3000);
+
+  // Keep only a reasonable number
+  if (layers.length > 12) {
+    const old = layers.shift();
+    if (old && old.parentNode) old.remove();
+  }
+}
+
+// Start with a few
+for (let i = 0; i < 5; i++) setTimeout(spawnGif, i * 400);
+
+// Spawn more on tap / click
+function boom() {
+  for (let i = 0; i < 3; i++) setTimeout(spawnGif, i * 120);
+  logo.style.transform = `scale(1.2) rotate(${(Math.random()-0.5)*20}deg)`;
+  setTimeout(() => logo.style.transform = '', 300);
+}
+
+window.addEventListener('pointerdown', boom);
+window.addEventListener('touchstart', boom, {passive:true});
+
+// Gentle auto spawn
+setInterval(() => {
+  if (Math.random() < 0.6) spawnGif();
+}, 1800);
+</script>
+<script src="117-audio.js"></script>
+</body>
+</html>
