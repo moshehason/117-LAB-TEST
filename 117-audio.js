@@ -1,7 +1,5 @@
-/* 117 AUDIO — fully autonomous random mix
-   Free sources only:
-   - Web Speech (cryptic 117 wisdom)
-   - Wikimedia real spoken samples
+/* 117 AUDIO — autonomous free mix
+   Sources: Web Speech (wisdom) + Wikimedia Commons real audio
 */
 (() => {
   const path = (location.pathname.split('/').pop() || '').toLowerCase();
@@ -50,11 +48,14 @@
     "It has been counted more times than it has been understood."
   ];
 
+  // Free real audio from Wikimedia Commons (stable direct links)
   const REAL = [
     { url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/4/40/LL-Q33890_%28nso%29-Mohau-117.wav/LL-Q33890_%28nso%29-Mohau-117.wav.mp3', vol: 0.15, dur: 3.5 },
     { url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/3/3a/En-us-hello.ogg/En-us-hello.ogg.mp3', vol: 0.12, dur: 1.5 },
     { url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/8/8a/En-us-yes.ogg/En-us-yes.ogg.mp3', vol: 0.13, dur: 1.2 },
     { url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/4/4c/En-us-no.ogg/En-us-no.ogg.mp3', vol: 0.12, dur: 1.1 },
+    { url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/0/0f/En-us-the.ogg/En-us-the.ogg.mp3', vol: 0.11, dur: 1.0 },
+    { url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/9/9f/En-us-and.ogg/En-us-and.ogg.mp3', vol: 0.11, dur: 1.0 },
     { url: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/' + encodeURIComponent('Come here, my child.ogg'), vol: 0.10, dur: 2.8 },
     { url: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/' + encodeURIComponent('Pig grunt - Erdie.ogg'), vol: 0.07, dur: 2.0 }
   ];
@@ -122,8 +123,8 @@
     const now = performance.now();
     if (now - lastPlay < 1300 || busy) return;
     lastPlay = now;
-    // 75% wisdom, 25% real samples — fully random
-    if (Math.random() < 0.75) speakWisdom();
+    // Fully random mix
+    if (Math.random() < 0.72) speakWisdom();
     else playReal();
   }
 
