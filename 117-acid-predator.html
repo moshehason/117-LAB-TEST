@@ -6,7 +6,7 @@
 <title>117 — ACID / PREDATOR</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{width:100%;height:100%;overflow:hidden;background:#fff;touch-action:none}
+  html,body{width:100%;height:100%;overflow:hidden;background:transparent!important;touch-action:none}
   canvas{display:block;width:100%;height:100%;position:absolute;inset:0}
   .tag,.hint{
     position:fixed;bottom:max(14px,env(safe-area-inset-bottom));
@@ -27,18 +27,15 @@
 </head>
 <body>
 <canvas id="c"></canvas>
-<div class="mode" id="mode">THERMAL VISION</div>
-<div class="tag">117 / ACID · PREDATOR</div>
-<div class="hint">TAP · HOLD</div>
+
 
 <script>
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
-const modeEl = document.getElementById('mode');
+const modeEl = {classList:{add(){},remove(){}}};
 let W, H, D, time = 0;
 let pointer = { x: 0.5, y: 0.5, down: false, force: 0 };
 let thermal = false;
-let thermalTimer = 0;
 
 // Multiple logo instances
 const logos = [];
@@ -80,12 +77,7 @@ canvas.addEventListener('pointerdown', e => {
   setPos(e);
   pointer.down = true;
   pointer.force = 1;
-  // Chance to trigger thermal on hard tap
-  if (Math.random() < 0.45 || pointer.force > 0.8) {
-    thermal = true;
-    thermalTimer = 180 + Math.random() * 120; // frames
-    modeEl.classList.add('on');
-  }
+  
   canvas.setPointerCapture?.(e.pointerId);
 });
 canvas.addEventListener('pointermove', e => { if (pointer.down) setPos(e); });
@@ -155,49 +147,11 @@ function frame(ms) {
   if (pointer.down) pointer.force += (1.3 - pointer.force) * 0.1;
   else pointer.force *= 0.92;
 
-  // Thermal mode countdown
-  if (thermal) {
-    thermalTimer--;
-    if (thermalTimer <= 0) {
-      thermal = false;
-      modeEl.classList.remove('on');
-    }
+  
   }
 
-  // Background
-  if (thermal) {
-    // Dark thermal background with scanlines
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, W, H);
-
-    // Subtle heat noise
-    for (let i = 0; i < 40; i++) {
-      const x = Math.random() * W;
-      const y = Math.random() * H;
-      const r = (4 + Math.random() * 18) * D;
-      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-      g.addColorStop(0, `rgba(255,${40 + Math.random()*80},0,${0.03 + Math.random()*0.04})`);
-      g.addColorStop(1, 'transparent');
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // Scanlines
-    ctx.fillStyle = 'rgba(0,40,110,0.08)';
-    for (let y = 0; y < H; y += 4 * D) {
-      ctx.fillRect(0, y, W, 1.5 * D);
-    }
-  } else {
-    // Acid dark background with color wash
-    const hue = (time * 20) % 360;
-    const bg = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W, H) * 0.7);
-    bg.addColorStop(0, `hsla(${hue}, 100%, 97%, 1)`);
-    bg.addColorStop(1, '#fff');
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, W, H);
-  }
+  // Transparent canvas background
+  ctx.clearRect(0, 0, W, H);
 
   // Update + draw logos
   for (const L of logos) {
@@ -230,8 +184,8 @@ function frame(ms) {
       sc,
       L.rot,
       L.hue,
-      thermal ? 0.7 + Math.random() * 0.3 : 0.55 + Math.random() * 0.35,
-      thermal
+      0.55 + Math.random() * 0.35,
+      false
     );
   }
 
