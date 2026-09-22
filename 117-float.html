@@ -9,7 +9,7 @@
   html,body{
     width:100%;height:100%;
     overflow:hidden;
-    background:#ffffff;
+    background:transparent!important;
     font-family:Arial Black,Arial,sans-serif;
     touch-action:none;
   }
@@ -113,18 +113,6 @@
     50%{transform:translateX(-50%) scale(0.85);opacity:0.45}
   }
 
-  .tag,.hint{
-    position:fixed;
-    bottom:max(16px,env(safe-area-inset-bottom));
-    font:700 9px/1 Arial,sans-serif;
-    letter-spacing:.18em;
-    color:rgba(0,0,0,0.35);
-    pointer-events:none;
-    z-index:10;
-  }
-  .tag{left:18px}
-  .hint{right:18px}
-
   /* Interactive tilt on pointer */
   .logo-wrap.interactive{
     transition:transform 0.6s cubic-bezier(0.22,1,0.36,1);
@@ -143,9 +131,6 @@
     </div>
     <div class="shadow"></div>
   </div>
-
-  <div class="tag">117 / FLOAT</div>
-  <div class="hint">MOVE · TOUCH</div>
 
 <script>
   const wrap = document.getElementById('wrap');
