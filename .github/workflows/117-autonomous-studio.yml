@@ -1,0 +1,235 @@
+name: 117 Autonomous Studio
+
+# Persistent automation for the ChatGPT x Claude Code workroom in Issue #3.
+# The collaboration protocol lives in the Issue #3 body itself - read it
+# there rather than duplicating it into a repo file.
+
+on:
+  schedule:
+    # Every 30 minutes.
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      test_comment_id:
+        description: >
+          Optional: numeric GitHub comment ID on Issue #3 to force-process
+          as the task, bypassing "newest unprocessed" selection. For manual
+          testing only.
+        required: false
+        type: string
+  issue_comment:
+    types: [created]
+
+# Only one run at a time across schedule/dispatch/comment triggers, so two
+# agents (or two overlapping runs) can never work the workroom simultaneously.
+# A queued run does not cancel one already in progress.
+concurrency:
+  group: 117-autonomous-studio
+  cancel-in-progress: false
+
+permissions:
+  contents: write # commit/push implementation changes
+  issues: write # post/read handoff comments on Issue #3
+  pull-requests: write # open a PR for substantial experiments
+
+env:
+  WORKROOM_ISSUE: 3
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  studio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # Loop protection: an issue_comment event only starts this job when the
+    # new comment is (a) actually on Issue #3, (b) not from a bot/automation
+    # account, and (c) not one of this system's own status/report markers.
+    # Comments that fail this (e.g. a Claude/ChatGPT handoff, a lock, or a
+    # done marker) never trigger an immediate run - the next 30-minute
+    # schedule tick is the backstop that eventually processes anything real.
+    if: >
+      github.event_name != 'issue_comment' ||
+      (
+        github.event.issue.number == 3 &&
+        github.event.comment.user.type != 'Bot' &&
+        github.event.comment.user.login != 'github-actions[bot]' &&
+        !contains(github.event.comment.body, '[CLAUDE') &&
+        !contains(github.event.comment.body, '[CHATGPT') &&
+        !contains(github.event.comment.body, '[117-')
+      )
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find newest unprocessed task
+        id: find
+        run: |
+          set -euo pipefail
+          REPO="${{ github.repository }}"
+          ISSUE="${WORKROOM_ISSUE}"
+          FORCE_ID="${{ github.event.inputs.test_comment_id }}"
+
+          COMMENTS_JSON=$(gh api "repos/${REPO}/issues/${ISSUE}/comments" --paginate)
+
+          # Comment IDs already locked or completed, from this system's own
+          # status markers anywhere in the thread.
+          DONE_IDS=$(echo "$COMMENTS_JSON" | jq -r '.[].body' | grep -oP '(?<=\[117-DONE:117-TASK-)[0-9]+(?=\])' || true)
+          WORKING_IDS=$(echo "$COMMENTS_JSON" | jq -r '.[].body' | grep -oP '(?<=\[117-WORKING:117-TASK-)[0-9]+(?=\])' || true)
+
+          TASK_COMMENT_ID=""
+          TASK_BODY=""
+
+          if [ -n "$FORCE_ID" ]; then
+            TASK_COMMENT_ID="$FORCE_ID"
+            TASK_BODY=$(echo "$COMMENTS_JSON" | jq -r --arg id "$FORCE_ID" '.[] | select((.id|tostring) == $id) | .body')
+            if [ -z "$TASK_BODY" ]; then
+              echo "::error::test_comment_id $FORCE_ID is not a comment on issue #${ISSUE}"
+              exit 1
+            fi
+          else
+            # Candidate task comments: not a bot, not one of this system's
+            # own status/report comments. Newest first.
+            CANDIDATES=$(echo "$COMMENTS_JSON" | jq -c '
+              [.[] | select(.user.type != "Bot") | select((.body | test("\\[CLAUDE")) or (.body | test("\\[117-")) | not)]
+              | sort_by(.id) | reverse
+            ')
+            LEN=$(echo "$CANDIDATES" | jq 'length')
+            for i in $(seq 0 $((LEN - 1))); do
+              CID=$(echo "$CANDIDATES" | jq -r ".[$i].id")
+              if ! grep -qx "$CID" <<<"$DONE_IDS" && ! grep -qx "$CID" <<<"$WORKING_IDS"; then
+                TASK_COMMENT_ID="$CID"
+                TASK_BODY=$(echo "$CANDIDATES" | jq -r ".[$i].body")
+                break
+              fi
+            done
+          fi
+
+          if [ -z "$TASK_COMMENT_ID" ]; then
+            echo "proceed=false" >>"$GITHUB_OUTPUT"
+            echo "No new unprocessed task on Issue #${ISSUE}. Exiting silently."
+            exit 0
+          fi
+
+          TASK_ID="117-TASK-${TASK_COMMENT_ID}"
+          {
+            echo "proceed=true"
+            echo "task_id=${TASK_ID}"
+            echo "task_comment_id=${TASK_COMMENT_ID}"
+          } >>"$GITHUB_OUTPUT"
+          # Use a random delimiter (never attacker-predictable) so a task
+          # comment cannot forge extra $GITHUB_OUTPUT keys by containing a
+          # line that happens to match a fixed heredoc terminator.
+          DELIM="TASKEOF_$(openssl rand -hex 16)"
+          {
+            echo "task_body<<${DELIM}"
+            echo "$TASK_BODY"
+            echo "${DELIM}"
+          } >>"$GITHUB_OUTPUT"
+          echo "Selected task ${TASK_ID} (comment ${TASK_COMMENT_ID})"
+
+      - name: Claim task (post WORKING lock)
+        if: steps.find.outputs.proceed == 'true'
+        run: |
+          set -euo pipefail
+          gh api "repos/${{ github.repository }}/issues/${WORKROOM_ISSUE}/comments" \
+            -f body="[117-WORKING:${{ steps.find.outputs.task_id }}]"
+
+      - name: Record starting commit
+        if: steps.find.outputs.proceed == 'true'
+        id: pre
+        run: echo "sha=$(git rev-parse HEAD)" >>"$GITHUB_OUTPUT"
+
+      - name: Run Claude Code on the task
+        if: steps.find.outputs.proceed == 'true'
+        id: claude
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            You are Claude Code, acting as the implementation engineer for
+            the "117" digital-art project, per the collaboration protocol in
+            the body of Issue #${{ env.WORKROOM_ISSUE }}. Read it before
+            acting.
+
+            This is task ${{ steps.find.outputs.task_id }} (source: issue
+            comment ${{ steps.find.outputs.task_comment_id }}):
+
+            ${{ steps.find.outputs.task_body }}
+
+            Rules:
+            - Inspect the current repo state before changing anything.
+            - Small, safe fixes may be committed directly to main.
+            - Substantial/experimental changes belong in the LAB and should
+              go through a branch + PR rather than a direct push to main.
+            - Preserve existing LAB experiments; never delete one to make
+              room for a new one.
+            - White background stays the default gallery look unless the
+              task says otherwise. No generic AI-looking design, no retro
+              8-bit/pixel-art unless explicitly requested.
+            - Japanese text is only allowed as part of the 117 artwork
+              itself (primarily 百十七); do not translate the site.
+            - Mobile/iPhone Safari must keep the full 117 mark visible
+              unless clipping is explicitly intentional.
+            - Never commit secrets. Use GitHub Secrets for credentials.
+            - Do not touch repo settings, visibility, billing, or branch
+              protection.
+            - Do not post your own comment to Issue #${{ env.WORKROOM_ISSUE }}
+              - a separate step in this workflow posts the single report
+              comment after you finish.
+
+      - name: Collect result
+        if: steps.find.outputs.proceed == 'true' && always()
+        id: result
+        run: |
+          set -euo pipefail
+          git fetch origin main --quiet
+          NEW_COMMITS=$(git log ${{ steps.pre.outputs.sha }}..origin/main --oneline || true)
+          LATEST_SHA=$(git rev-parse origin/main)
+
+          PR_URL=$(gh pr list --state open --search "${{ steps.find.outputs.task_id }} in:body" --json url --jq '.[0].url' || true)
+
+          STATUS="BLOCKED"
+          if [ "${{ steps.claude.outcome }}" = "success" ] && { [ -n "$NEW_COMMITS" ] || [ -n "$PR_URL" ]; }; then
+            STATUS="DONE"
+          elif [ "${{ steps.claude.outcome }}" = "success" ]; then
+            STATUS="PARTIAL"
+          fi
+
+          {
+            echo "status=${STATUS}"
+            echo "commit=${LATEST_SHA}"
+            echo "pr_url=${PR_URL}"
+          } >>"$GITHUB_OUTPUT"
+
+      - name: Post final report to Issue #3
+        if: steps.find.outputs.proceed == 'true' && always()
+        run: |
+          set -euo pipefail
+          BODY="[CLAUDE → CHATGPT]
+
+          STATUS: ${{ steps.result.outputs.status }}
+
+          TASK:
+          ${{ steps.find.outputs.task_id }} (comment ${{ steps.find.outputs.task_comment_id }})
+
+          CHANGES:
+          See commit/PR below for the diff.
+
+          TEST:
+          See workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          COMMIT:
+          ${{ steps.result.outputs.commit }}
+
+          PREVIEW:
+          ${{ steps.result.outputs.pr_url }}
+
+          NEXT:
+          Review the change above and reply here with the next task when ready.
+
+          [117-DONE:${{ steps.find.outputs.task_id }}]"
+
+          gh api "repos/${{ github.repository }}/issues/${WORKROOM_ISSUE}/comments" -f body="$BODY"
