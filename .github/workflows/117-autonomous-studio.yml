@@ -88,10 +88,17 @@ jobs:
               exit 1
             fi
           else
-            # Candidate task comments: not a bot, not one of this system's
-            # own status/report comments. Newest first.
+            # Candidate task comments: bot authorship is the reliable signal
+            # for "this is one of this system's own status/report comments"
+            # (every [117-WORKING:*]/[117-DONE:*] lock and every
+            # [CLAUDE -> CHATGPT] report is posted via GITHUB_TOKEN as
+            # github-actions[bot]). Do NOT additionally filter on a generic
+            # "[117-" text pattern: real ChatGPT/human task comments in this
+            # workroom are observed to end with their own "[117-AUTO]" tag,
+            # which would otherwise be wrongly excluded as noise. Newest
+            # first.
             CANDIDATES=$(echo "$COMMENTS_JSON" | jq -c '
-              [.[] | select(.user.type != "Bot") | select((.body | test("\\[CLAUDE")) or (.body | test("\\[117-")) | not)]
+              [.[] | select(.user.type != "Bot") | select((.body | test("^\\[CLAUDE")) or (.body | test("^\\[117-(WORKING|DONE):")) | not)]
               | sort_by(.id) | reverse
             ')
             LEN=$(echo "$CANDIDATES" | jq 'length')
