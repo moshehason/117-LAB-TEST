@@ -41,16 +41,7 @@
     transition:opacity 0.8s ease, transform 0.8s ease;
   }
   .line.on{opacity:1;transform:translateY(0)}
-  .tag{
-    position:fixed;bottom:max(14px,env(safe-area-inset-bottom));left:16px;
-    font:700 9px/1 Arial,sans-serif;letter-spacing:.18em;
-    color:rgba(255,255,255,.35);z-index:10;pointer-events:none;
-  }
-  .hint{
-    position:fixed;bottom:max(14px,env(safe-area-inset-bottom));right:16px;
-    font:700 9px/1 Arial,sans-serif;letter-spacing:.18em;
-    color:rgba(255,255,255,.35);z-index:10;pointer-events:none;
-  }
+  
 </style>
 <style id="117-transparent-bg">html,body{background:transparent!important;background-color:transparent!important}canvas{background:transparent!important}</style></head>
 <body>
@@ -59,8 +50,7 @@
   <div class="big" id="num">117</div>
   <div class="line" id="line"></div>
 </div>
-<div class="tag">117 / עברית</div>
-<div class="hint">גע</div>
+
 
 <script>
 const PHRASES = [
@@ -145,14 +135,9 @@ function frame(ms) {
   time = ms * 0.001;
 
   // Soft dark background with warm vignette
-  ctx.fillStyle = '#0c0c0c';
-  ctx.fillRect(0, 0, W, H);
+  ctx.clearRect(0, 0, W, H);
 
-  const g = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.7);
-  g.addColorStop(0, 'rgba(40,25,10,0.35)');
-  g.addColorStop(1, 'rgba(0,0,0,0.7)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, H);
+  
 
   // Floating dust
   for (let i = 0; i < 40; i++) {
