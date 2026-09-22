@@ -8,7 +8,7 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{
     width:100%;height:100%;overflow:hidden;
-    background:#111;color:#fff;
+    background:transparent!important;color:#fff;
     font-family:Arial Black,Arial,sans-serif;
     touch-action:none;
   }
@@ -38,21 +38,12 @@
     0%,100%{transform:scale(1) rotate(-2deg);filter:hue-rotate(0deg)}
     50%{transform:scale(1.08) rotate(2deg);filter:hue-rotate(40deg)}
   }
-  .tag,.hint{
-    position:fixed;bottom:max(14px,env(safe-area-inset-bottom));
-    font:700 9px/1 Arial,sans-serif;letter-spacing:.18em;
-    color:rgba(255,255,255,.4);z-index:20;pointer-events:none;
-  }
-  .tag{left:16px}
-  .hint{right:16px}
-</style>
+  </style>
 <style id="117-transparent-bg">html,body{background:transparent!important;background-color:transparent!important}canvas{background:transparent!important}</style></head>
 <body>
   <div class="stage" id="stage">
     <div class="logo" id="logo">117</div>
   </div>
-  <div class="tag">117 / WEIRD GIFS</div>
-  <div class="hint">TAP ANYWHERE</div>
 
 <script>
 // Public domain / free animated gifs from Wikimedia Commons
