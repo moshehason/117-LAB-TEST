@@ -23,16 +23,10 @@
 <style id="117-transparent-bg">html,body{background:transparent!important;background-color:transparent!important}canvas{background:transparent!important}</style></head>
 <body>
 <canvas id="c"></canvas>
-<div class="ui">
-  <div class="tag">117 / VOYAGE</div>
-  <div class="status" id="status">APPROACHING VORTEX</div>
-  <div class="hint">HOLD TO ACCELERATE</div>
-</div>
-
 <script>
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
-const statusEl = document.getElementById('status');
+const statusEl = {textContent:''};
 let W, H, D, time = 0;
 let speed = 1;
 let targetSpeed = 1;
@@ -143,9 +137,7 @@ function frame(ms) {
   statusEl.textContent = phaseText;
 
   // Background depth color shifts with progress
-  const deep = 4 + progress * 12;
-  ctx.fillStyle = `rgb(${deep},${deep * 0.6},${deep * 1.4})`;
-  ctx.fillRect(0, 0, W, H);
+  ctx.clearRect(0, 0, W, H);
 
   const cx = W / 2;
   const cy = H / 2;
@@ -286,12 +278,7 @@ function frame(ms) {
     ctx.restore();
   }
 
-  // Vignette
-  const vig = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * 0.7);
-  vig.addColorStop(0.5, 'transparent');
-  vig.addColorStop(1, 'rgba(0,0,0,0.55)');
-  ctx.fillStyle = vig;
-  ctx.fillRect(0, 0, W, H);
+  // Transparent background: no full-frame vignette fill.
 }
 requestAnimationFrame(frame);
 </script>
