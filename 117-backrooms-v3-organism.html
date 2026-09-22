@@ -9,8 +9,8 @@ for(let z=1;z>-91;z-=8){let b=Math.sin(z*.12)*1.25,L=new THREE.PointLight(0xffff
 s.add(new THREE.HemisphereLight(0xffffff,0x111111,1.05));
 const dl=add(new THREE.BoxGeometry(3.2,4.5,.25),black,-1.6,2.25,-82),dr=add(new THREE.BoxGeometry(3.2,4.5,.25),black,1.6,2.25,-82);
 const altar=add(new THREE.BoxGeometry(6,.4,1.2),black,0,.2,-92);altar.visible=false;
-const bioMat=new THREE.MeshStandardMaterial({color:0xd0d0d0,roughness:.58,metalness:.04});
-const organism=new THREE.Group();organism.position.set(0,1.65,-91);organism.visible=false;s.add(organism);
+const bioMat=new THREE.MeshPhysicalMaterial({color:0xcfcfcf,roughness:.22,metalness:.02,clearcoat:.65,clearcoatRoughness:.18});
+const organism=new THREE.Group();organism.position.set(.48,1.65,-91);organism.visible=false;s.add(organism);
 function tube(points,radius=.18){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));const mesh=new THREE.Mesh(new THREE.TubeGeometry(curve,48,radius,10,false),bioMat);organism.add(mesh);return mesh}
 const strokes=[
  tube([[-1.65,-1,0],[-1.58,-.25,.04],[-1.62,.55,-.02],[-1.55,1.35,0]],.22),
@@ -18,13 +18,13 @@ const strokes=[
  tube([[.45,1.25,0],[1.15,1.35,.03],[1.82,1.28,0],[1.5,.72,-.04],[1.15,.15,.03],[.82,-.45,0],[.55,-1,0]],.22)
 ];
 const nodes=[];for(const st of strokes){for(let i=0;i<5;i++){const n=new THREE.Mesh(new THREE.SphereGeometry(.24+Math.random()*.09,12,10),bioMat);n.position.copy(st.geometry.parameters.path.getPoint(i/4));n.scale.set(.7+Math.random()*.35,1+Math.random()*.5,.7+Math.random()*.25);organism.add(n);nodes.push(n)}}
-const corridorLights=s.children.filter(o=>o.isPointLight);
+const corridorLights=s.children.filter(o=>o.isPointLight);let blackoutAt=7+Math.random()*1.4,blackoutUntil=0,slowFlicker=0,nextFlicker=2+Math.random()*5;
 let start=performance.now(),tilt=0,drag=0,down=false,px=0;addEventListener('deviceorientation',e=>{if(e.gamma!=null)tilt=THREE.MathUtils.clamp(e.gamma/45,-1,1)},{passive:true});addEventListener('pointerdown',e=>{down=true;px=e.clientX});addEventListener('pointerup',()=>down=false);addEventListener('pointermove',e=>{if(down){drag+=(e.clientX-px)*.002;px=e.clientX}});
 const E=(a,b,t)=>{t=Math.max(0,Math.min(1,(t-a)/(b-a)));return t*t*(3-2*t)};
 function loop(n){requestAnimationFrame(loop);let t=(n-start)/1000,z=t<16?5-E(0,16,t)*78:-73-E(16,19,t)*5.5,b=Math.sin(z*.12)*1.1;c.position.set(c.position.x+(b+tilt*.35+drag-c.position.x)*.05,1.65+Math.sin(t*8)*.022,z);c.rotation.y+=(-Math.sin(z*.12)*.12-tilt*.06-drag*.2-c.rotation.y)*.05;
 if(t>16){let q=E(16,18,t);dl.position.x=-1.6-q*2.7;dr.position.x=1.6+q*2.7}
 if(t>18){organism.visible=altar.visible=true}
-if(organism.visible){const breath=1+Math.sin(t*2.15)*.035;organism.scale.set(breath,1+Math.sin(t*1.7)*.025,breath);organism.rotation.y=Math.sin(t*.72)*.055;nodes.forEach((o,i)=>{o.scale.x=.82+Math.sin(t*2.6+i)*.12;o.scale.y=1.15+Math.sin(t*2+i*.7)*.18})}
-corridorLights.forEach((L,i)=>{const flick=(Math.sin(t*13.7+i*2.1)>0.985||Math.sin(t*5.3+i*4.4)<-.992)?.12:1;L.intensity=25*flick});
+if(organism.visible){const breath=1+Math.sin(t*1.35)*.055;organism.scale.set(breath,1+Math.sin(t*1.1)*.045,breath);organism.position.x=.48+Math.sin(t*.42)*.08;organism.rotation.y=Math.sin(t*.5)*.075;nodes.forEach((o,i)=>{o.scale.x=.86+Math.sin(t*1.45+i)*.18;o.scale.y=1.2+Math.sin(t*1.15+i*.7)*.24;o.position.z=Math.sin(t*.8+i)*.035})}
+if(t>=blackoutAt){blackoutUntil=t+.72+Math.random()*.5;blackoutAt=t+6.3+Math.random()*1.4}if(t>=nextFlicker){slowFlicker=t+.18+Math.random()*.45;nextFlicker=t+2.4+Math.random()*5.8}const totalDark=t<blackoutUntil;corridorLights.forEach((L,i)=>{let v=25;if(totalDark)v=0;else if(t<slowFlicker&&Math.random()<.45)v=4+Math.random()*12;L.intensity=v});s.children.filter(o=>o.isHemisphereLight).forEach(L=>L.intensity=totalDark?0:1.05);r.toneMappingExposure=totalDark?.03:1.65;
 if(t>28)document.querySelector('#fade').style.opacity=E(28,29.5,t);if(t>30.5){start=n;dl.position.x=-1.6;dr.position.x=1.6;organism.visible=altar.visible=false;document.querySelector('#fade').style.opacity=0}r.render(s,c)}
 requestAnimationFrame(loop);addEventListener('resize',()=>{c.aspect=innerWidth/innerHeight;c.updateProjectionMatrix();r.setSize(innerWidth,innerHeight)})</script></body></html>
