@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>117 BACKROOMS V3</title><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}canvas{display:block}#grain,#fade{position:fixed;inset:0;pointer-events:none}#grain{z-index:4;opacity:.12;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}#fade{z-index:5;background:#000;opacity:0}</style></head><body><div id="grain"></div><div id="fade"></div><script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+const s=new THREE.Scene();s.background=new THREE.Color(0x090909);s.fog=new THREE.FogExp2(0x090909,.035);const c=new THREE.PerspectiveCamera(70,innerWidth/innerHeight,.05,130),r=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});r.setPixelRatio(Math.min(devicePixelRatio,1.5));r.setSize(innerWidth,innerHeight);r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.65;document.body.prepend(r.domElement);
+const wall=new THREE.MeshStandardMaterial({color:0x777777,roughness:.95}),floorM=new THREE.MeshStandardMaterial({color:0x292929,roughness:.82,metalness:.12}),skin=new THREE.MeshStandardMaterial({color:0xb9b9b9,roughness:.72}),black=new THREE.MeshStandardMaterial({color:0x151515,roughness:1});
+function add(g,m,x=0,y=0,z=0){let o=new THREE.Mesh(g,m);o.position.set(x,y,z);s.add(o);return o}
+let fl=add(new THREE.PlaneGeometry(17,120),floorM,0,0,-45);fl.rotation.x=-Math.PI/2;let ce=fl.clone();ce.position.y=4.5;ce.rotation.x=Math.PI/2;s.add(ce);
+for(let z=5;z>-96;z-=5.5){let b=Math.sin(z*.12)*1.25;add(new THREE.BoxGeometry(1.2,4.5,5.3),wall,-5+b,2.25,z);add(new THREE.BoxGeometry(1.2,4.5,5.3),wall,5+b,2.25,z)}
+for(let z=1;z>-91;z-=8){let b=Math.sin(z*.12)*1.25,L=new THREE.PointLight(0xffffff,25,15,2);L.position.set(b,3.8,z);s.add(L);add(new THREE.BoxGeometry(2.6,.07,.13),new THREE.MeshBasicMaterial({color:0xffffff}),b,4.15,z)}
+s.add(new THREE.HemisphereLight(0xffffff,0x111111,1.05));
+const dl=add(new THREE.BoxGeometry(3.2,4.5,.25),black,-1.6,2.25,-82),dr=add(new THREE.BoxGeometry(3.2,4.5,.25),black,1.6,2.25,-82);
+const altar=add(new THREE.BoxGeometry(6,.4,1.2),black,0,.2,-92);altar.visible=false;
+const bioMat=new THREE.MeshStandardMaterial({color:0xd0d0d0,roughness:.58,metalness:.04});
+const organism=new THREE.Group();organism.position.set(0,1.65,-91);organism.visible=false;s.add(organism);
+function tube(points,radius=.18){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));const mesh=new THREE.Mesh(new THREE.TubeGeometry(curve,48,radius,10,false),bioMat);organism.add(mesh);return mesh}
+const strokes=[
+ tube([[-1.65,-1,0],[-1.58,-.25,.04],[-1.62,.55,-.02],[-1.55,1.35,0]],.22),
+ tube([[-.55,-1,0],[-.5,-.25,-.03],[-.54,.55,.04],[-.47,1.35,0]],.22),
+ tube([[.45,1.25,0],[1.15,1.35,.03],[1.82,1.28,0],[1.5,.72,-.04],[1.15,.15,.03],[.82,-.45,0],[.55,-1,0]],.22)
+];
+const nodes=[];for(const st of strokes){for(let i=0;i<5;i++){const n=new THREE.Mesh(new THREE.SphereGeometry(.24+Math.random()*.09,12,10),bioMat);n.position.copy(st.geometry.parameters.path.getPoint(i/4));n.scale.set(.7+Math.random()*.35,1+Math.random()*.5,.7+Math.random()*.25);organism.add(n);nodes.push(n)}}
+const corridorLights=s.children.filter(o=>o.isPointLight);
+let start=performance.now(),tilt=0,drag=0,down=false,px=0;addEventListener('deviceorientation',e=>{if(e.gamma!=null)tilt=THREE.MathUtils.clamp(e.gamma/45,-1,1)},{passive:true});addEventListener('pointerdown',e=>{down=true;px=e.clientX});addEventListener('pointerup',()=>down=false);addEventListener('pointermove',e=>{if(down){drag+=(e.clientX-px)*.002;px=e.clientX}});
+const E=(a,b,t)=>{t=Math.max(0,Math.min(1,(t-a)/(b-a)));return t*t*(3-2*t)};
+function loop(n){requestAnimationFrame(loop);let t=(n-start)/1000,z=t<16?5-E(0,16,t)*78:-73-E(16,19,t)*5.5,b=Math.sin(z*.12)*1.1;c.position.set(c.position.x+(b+tilt*.35+drag-c.position.x)*.05,1.65+Math.sin(t*8)*.022,z);c.rotation.y+=(-Math.sin(z*.12)*.12-tilt*.06-drag*.2-c.rotation.y)*.05;
+if(t>16){let q=E(16,18,t);dl.position.x=-1.6-q*2.7;dr.position.x=1.6+q*2.7}
+if(t>18){organism.visible=altar.visible=true}
+if(organism.visible){const breath=1+Math.sin(t*2.15)*.035;organism.scale.set(breath,1+Math.sin(t*1.7)*.025,breath);organism.rotation.y=Math.sin(t*.72)*.055;nodes.forEach((o,i)=>{o.scale.x=.82+Math.sin(t*2.6+i)*.12;o.scale.y=1.15+Math.sin(t*2+i*.7)*.18})}
+corridorLights.forEach((L,i)=>{const flick=(Math.sin(t*13.7+i*2.1)>0.985||Math.sin(t*5.3+i*4.4)<-.992)?.12:1;L.intensity=25*flick});
+if(t>28)document.querySelector('#fade').style.opacity=E(28,29.5,t);if(t>30.5){start=n;dl.position.x=-1.6;dr.position.x=1.6;organism.visible=altar.visible=false;document.querySelector('#fade').style.opacity=0}r.render(s,c)}
+requestAnimationFrame(loop);addEventListener('resize',()=>{c.aspect=innerWidth/innerHeight;c.updateProjectionMatrix();r.setSize(innerWidth,innerHeight)})</script></body></html>
