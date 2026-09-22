@@ -1,0 +1,46 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>117 BACKROOMS</title><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}canvas{display:block}#grain{pointer-events:none;position:fixed;inset:0;z-index:4;opacity:.17;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");mix-blend-mode:screen;animation:g .13s steps(2) infinite}@keyframes g{50%{transform:translate(2px,-2px)}}#flash{position:fixed;inset:0;z-index:5;background:#fff;opacity:0;pointer-events:none}#fade{position:fixed;inset:0;z-index:6;background:#000;opacity:0;pointer-events:none}</style></head>
+<body><div id="grain"></div><div id="flash"></div><div id="fade"></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x020202);scene.fog=new THREE.FogExp2(0x020202,.055);
+const cam=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.05,120);
+const ren=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});ren.setPixelRatio(Math.min(devicePixelRatio,1.45));ren.setSize(innerWidth,innerHeight);ren.outputColorSpace=THREE.SRGBColorSpace;document.body.prepend(ren.domElement);
+const white=new THREE.MeshStandardMaterial({color:0xbdbdbd,roughness:1}), dark=new THREE.MeshStandardMaterial({color:0x090909,roughness:1}), black=new THREE.MeshBasicMaterial({color:0});
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(16,110),new THREE.MeshStandardMaterial({color:0x171717,roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.z=-38;scene.add(floor);
+const ceil=floor.clone();ceil.position.y=4.3;ceil.rotation.x=Math.PI/2;scene.add(ceil);
+function box(x,y,z,sx,sy,sz,mat=white){const m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat);m.position.set(x,y,z);scene.add(m);return m}
+// irregular cave/backroom corridor
+for(let z=4;z>-88;z-=5.5){let bend=Math.sin(z*.13)*1.35;box(-5.1+bend,2.1,z,1.25,4.3,5.2);box(5.1+bend,2.1,z,1.25,4.3,5.2);if(Math.abs(z%16)<5){box(-2.9+bend,2.1,z-.2,.35,4.3,.45,dark);box(2.9+bend,2.1,z-.2,.35,4.3,.45,dark)}}
+for(let z=0;z>-78;z-=9){let b=Math.sin(z*.13)*1.35;const l=new THREE.PointLight(0xffffff,13,12,2);l.position.set(b,3.75,z-2);scene.add(l);const tube=box(b,4.05,z-2,2.4,.06,.12,new THREE.MeshBasicMaterial({color:0xffffff}));}
+const altar=box(0,.55,-82,3.8,1.1,1.8,dark);altar.visible=false;
+const tex=document.createElement('canvas');tex.width=512;tex.height=256;const tx=tex.getContext('2d');tx.fillStyle='#fff';tx.font='900 190px Arial';tx.textAlign='center';tx.textBaseline='middle';tx.fillText('117',256,128);const t117=new THREE.CanvasTexture(tex);const sign=new THREE.Mesh(new THREE.PlaneGeometry(4.4,2.2),new THREE.MeshBasicMaterial({map:t117,transparent:true,side:THREE.DoubleSide}));sign.position.set(0,2,-81);sign.visible=false;scene.add(sign);
+const robes=new THREE.Group();for(let i=-2;i<=2;i++){const g=new THREE.Group(),body=new THREE.Mesh(new THREE.ConeGeometry(.65,2.4,7),black),head=new THREE.Mesh(new THREE.SphereGeometry(.36,8,8),black);body.position.y=1.2;head.position.y=2.55;g.add(body,head);g.position.set(i*1.45,0,-84.5-Math.abs(i)*.45);robes.add(g)}robes.visible=false;scene.add(robes);
+// door
+const doorL=box(-1.6,2.15,-76,3.2,4.3,.25,dark),doorR=box(1.6,2.15,-76,3.2,4.3,.25,dark);
+// monster, intentionally graphic/silhouette
+const monster=new THREE.Group();const skull=new THREE.Mesh(new THREE.IcosahedronGeometry(1.2,1),black);skull.scale.set(1.05,1.25,.75);monster.add(skull);
+for(const s of [-1,1]){const horn=new THREE.Mesh(new THREE.ConeGeometry(.25,1.8,6),black);horn.position.set(s*.75,1.25,0);horn.rotation.z=s*-.45;monster.add(horn);const eye=new THREE.Mesh(new THREE.SphereGeometry(.13,8,8),new THREE.MeshBasicMaterial({color:0xffffff}));eye.position.set(s*.42,.25,.82);monster.add(eye)}
+const mouth=new THREE.Mesh(new THREE.CircleGeometry(.62,16),new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide}));mouth.position.set(0,-.42,.83);monster.add(mouth);monster.position.set(0,2,-89);monster.scale.setScalar(.01);monster.visible=false;scene.add(monster);
+const amb=new THREE.HemisphereLight(0x777777,0x000000,.42);scene.add(amb);
+cam.position.set(0,1.65,5);
+let start=performance.now(),tilt=0,last=0;
+addEventListener('deviceorientation',e=>{if(e.gamma!=null)tilt=THREE.MathUtils.clamp(e.gamma/45,-1,1)},{passive:true});
+let dragX=0,down=false,px=0;addEventListener('pointerdown',e=>{down=true;px=e.clientX});addEventListener('pointerup',()=>down=false);addEventListener('pointermove',e=>{if(down){dragX+=(e.clientX-px)*.0025;px=e.clientX}});
+function ease(a,b,t){t=Math.max(0,Math.min(1,(t-a)/(b-a)));return t*t*(3-2*t)}
+function animate(now){requestAnimationFrame(animate);const t=(now-start)/1000,dt=Math.min((now-last)/1000,.05);last=now;
+ let z;
+ if(t<15) z=5-ease(0,15,t)*74; else z=-69-ease(15,18,t)*5.2;
+ const bend=Math.sin(z*.13)*1.2;cam.position.x=THREE.MathUtils.lerp(cam.position.x,bend+tilt*.42+dragX,.05);cam.position.z=z;cam.position.y=1.65+Math.sin(t*8)*.025;
+ cam.rotation.y=THREE.MathUtils.lerp(cam.rotation.y,-Math.sin(z*.13)*.14-tilt*.08-dragX*.3,.05);cam.rotation.z=Math.sin(t*6)*.004;
+ if(t>15){let o=ease(15,17.2,t);doorL.position.x=-1.6-o*2.7;doorR.position.x=1.6+o*2.7}
+ if(t>17.1){altar.visible=sign.visible=robes.visible=true;robes.children.forEach((r,i)=>r.rotation.y=Math.sin(t*1.7+i)*.08)}
+ if(t>20.5){monster.visible=true;let a=ease(20.5,23.5,t);monster.position.z=-89+a*11;monster.scale.setScalar(.01+a*2.6);monster.rotation.z=Math.sin(t*19)*.025*a}
+ if(t>23.1){document.getElementById('flash').style.opacity=String(Math.max(0,1-(t-23.1)*5));sign.visible=false}
+ if(t>24){let f=ease(24,25.2,t);document.getElementById('fade').style.opacity=String(f);monster.scale.multiplyScalar(1+dt*2.3)}
+ if(t>26.2){start=now;doorL.position.x=-1.6;doorR.position.x=1.6;altar.visible=sign.visible=robes.visible=monster.visible=false;monster.scale.setScalar(.01);document.getElementById('fade').style.opacity='0'}
+ ren.render(scene,cam)}
+requestAnimationFrame(animate);
+addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();ren.setSize(innerWidth,innerHeight)});
+</script></body></html>
