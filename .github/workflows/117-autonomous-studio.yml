@@ -6,8 +6,8 @@ name: 117 Autonomous Studio
 
 on:
   schedule:
-    # Every 30 minutes.
-    - cron: "*/30 * * * *"
+    # Every 6 hours.
+    - cron: "0 */6 * * *"
   workflow_dispatch:
     inputs:
       test_comment_id:
@@ -31,6 +31,7 @@ permissions:
   contents: write # commit/push implementation changes
   issues: write # post/read handoff comments on Issue #3
   pull-requests: write # open a PR for substantial experiments
+  id-token: write # required for claude-code-action to authenticate via the installed Claude GitHub App
 
 env:
   WORKROOM_ISSUE: 3
@@ -44,8 +45,8 @@ jobs:
     # new comment is (a) actually on Issue #3, (b) not from a bot/automation
     # account, and (c) not one of this system's own status/report markers.
     # Comments that fail this (e.g. a Claude/ChatGPT handoff, a lock, or a
-    # done marker) never trigger an immediate run - the next 30-minute
-    # schedule tick is the backstop that eventually processes anything real.
+    # done marker) never trigger an immediate run - the next scheduled tick
+    # (every 6 hours) is the backstop that eventually processes anything real.
     if: >
       github.event_name != 'issue_comment' ||
       (
@@ -157,18 +158,28 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             You are Claude Code, acting as the implementation engineer for
-            the "117" digital-art project, per the collaboration protocol in
-            the body of Issue #${{ env.WORKROOM_ISSUE }}. Read it before
-            acting.
+            the "117" digital-art project. Before acting, read the full
+            body AND every comment of Issue #${{ env.WORKROOM_ISSUE }}
+            (e.g. `gh issue view ${{ env.WORKROOM_ISSUE }} --comments`) -
+            not just the single task comment below. Earlier comments may be
+            a task this one amends, or context this one assumes; do not act
+            on this comment in isolation.
 
             This is task ${{ steps.find.outputs.task_id }} (source: issue
             comment ${{ steps.find.outputs.task_comment_id }}):
 
             ${{ steps.find.outputs.task_body }}
 
+            Moshe (the project owner) has explicitly authorized autonomous
+            commits/pushes to this site for fixes and updates, so you do not
+            need to wait for further approval to make safe changes - but the
+            scope/safety rules below still apply, and a genuinely large or
+            risky change should still go through a branch + PR rather than
+            a direct push, per the rule below.
+
             Rules:
             - Inspect the current repo state before changing anything.
-            - Small, safe fixes may be committed directly to main.
+            - Small, safe fixes and updates may be committed directly to main.
             - Substantial/experimental changes belong in the LAB and should
               go through a branch + PR rather than a direct push to main.
             - Preserve existing LAB experiments; never delete one to make
