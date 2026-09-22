@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>117 BACKROOMS V3</title><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}canvas{display:block}#grain,#fade{position:fixed;inset:0;pointer-events:none}#grain{z-index:4;opacity:.12;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}#fade{z-index:5;background:#000;opacity:0}</style></head><body><div id="grain"></div><div id="fade"></div><script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+const s=new THREE.Scene();s.background=new THREE.Color(0x090909);s.fog=new THREE.FogExp2(0x090909,.035);const c=new THREE.PerspectiveCamera(70,innerWidth/innerHeight,.05,130),r=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});r.setPixelRatio(Math.min(devicePixelRatio,1.5));r.setSize(innerWidth,innerHeight);r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.65;document.body.prepend(r.domElement);
+const wall=new THREE.MeshStandardMaterial({color:0x777777,roughness:.95}),floorM=new THREE.MeshStandardMaterial({color:0x292929,roughness:.82,metalness:.12}),skin=new THREE.MeshStandardMaterial({color:0xb9b9b9,roughness:.72}),black=new THREE.MeshStandardMaterial({color:0x151515,roughness:1});
+function add(g,m,x=0,y=0,z=0){let o=new THREE.Mesh(g,m);o.position.set(x,y,z);s.add(o);return o}
+let fl=add(new THREE.PlaneGeometry(17,120),floorM,0,0,-45);fl.rotation.x=-Math.PI/2;let ce=fl.clone();ce.position.y=4.5;ce.rotation.x=Math.PI/2;s.add(ce);
+for(let z=5;z>-96;z-=5.5){let b=Math.sin(z*.12)*1.25;add(new THREE.BoxGeometry(1.2,4.5,5.3),wall,-5+b,2.25,z);add(new THREE.BoxGeometry(1.2,4.5,5.3),wall,5+b,2.25,z)}
+for(let z=1;z>-91;z-=8){let b=Math.sin(z*.12)*1.25,L=new THREE.PointLight(0xffffff,25,15,2);L.position.set(b,3.8,z);s.add(L);add(new THREE.BoxGeometry(2.6,.07,.13),new THREE.MeshBasicMaterial({color:0xffffff}),b,4.15,z)}
+s.add(new THREE.HemisphereLight(0xffffff,0x111111,1.05));
+const dl=add(new THREE.BoxGeometry(3.2,4.5,.25),black,-1.6,2.25,-82),dr=add(new THREE.BoxGeometry(3.2,4.5,.25),black,1.6,2.25,-82);
+const altar=add(new THREE.BoxGeometry(6,.4,1.2),black,0,.2,-92);altar.visible=false;
+const fires=new THREE.Group();fires.position.set(.45,.25,-91);fires.visible=false;s.add(fires);
+const loader=new THREE.TextureLoader();
+const noise=loader.load('https://raw.githubusercontent.com/housz/ThreeVolumetricFire/main/examples/assets/nzw.png');
+const profile=loader.load('https://raw.githubusercontent.com/housz/ThreeVolumetricFire/main/examples/assets/firetex.png');
+[noise,profile].forEach(t=>{t.wrapS=t.wrapT=THREE.RepeatWrapping;t.minFilter=t.magFilter=THREE.LinearFilter});profile.wrapS=profile.wrapT=THREE.ClampToEdgeWrapping;
+const fireLight=new THREE.PointLight(0xff5b16,0,18,2);fireLight.position.set(.4,2,-89.5);s.add(fireLight);
+let fireReady=false, VF=null, flames=[];
+async function makeFire(){try{const m=await import('https://cdn.jsdelivr.net/gh/housz/ThreeVolumetricFire@main/src/ThreeVolumetricFire.js');VF=m.VolumetricFire;
+function F(w,h,d,x,y,pts){const f=new VF({camera:c,textureNoise:noise,textureProfile:profile,width:w,height:h,depth:d,sliceSpacing:.13,segments:28});f.position.set(x,y,0);if(pts)f.setControlPoints(pts);fires.add(f);flames.push(f);return f}
+F(.52,3.0,.55,-1.35,0);
+F(.52,3.0,.55,-.35,0);
+const seven=F(.58,3.2,.58,.95,0,[{pos:new THREE.Vector3(-.5,2.7,0),scale:new THREE.Vector3(1.25,1,1),rot:new THREE.Quaternion()},{pos:new THREE.Vector3(.55,2.7,0),scale:new THREE.Vector3(1.1,1,1),rot:new THREE.Quaternion()},{pos:new THREE.Vector3(.25,1.8,0),scale:new THREE.Vector3(.75,1,1),rot:new THREE.Quaternion()},{pos:new THREE.Vector3(-.05,.9,0),scale:new THREE.Vector3(.6,1,1),rot:new THREE.Quaternion()},{pos:new THREE.Vector3(-.28,0,0),scale:new THREE.Vector3(.5,1,1),rot:new THREE.Quaternion()}]);fireReady=true}catch(e){console.error('VolumetricFire load failed',e)}}makeFire();
+const corridorLights=s.children.filter(o=>o.isPointLight&&o!==fireLight);let blackoutAt=7,blackoutUntil=0,nextFlicker=2.5,slowFlicker=0;let start=performance.now(),tilt=0,drag=0,down=false,px=0;addEventListener('deviceorientation',e=>{if(e.gamma!=null)tilt=THREE.MathUtils.clamp(e.gamma/45,-1,1)},{passive:true});addEventListener('pointerdown',e=>{down=true;px=e.clientX});addEventListener('pointerup',()=>down=false);addEventListener('pointermove',e=>{if(down){drag+=(e.clientX-px)*.002;px=e.clientX}});
+const E=(a,b,t)=>{t=Math.max(0,Math.min(1,(t-a)/(b-a)));return t*t*(3-2*t)};
+function loop(n){requestAnimationFrame(loop);let t=(n-start)/1000,z=t<16?5-E(0,16,t)*78:-73-E(16,19,t)*5.5,b=Math.sin(z*.12)*1.1;c.position.set(c.position.x+(b+tilt*.35+drag-c.position.x)*.05,1.65+Math.sin(t*8)*.022,z);c.rotation.y+=(-Math.sin(z*.12)*.12-tilt*.06-drag*.2-c.rotation.y)*.05;
+if(t>16){let q=E(16,18,t);dl.position.x=-1.6-q*2.7;dr.position.x=1.6+q*2.7}if(t>18){fires.visible=altar.visible=true}
+if(fireReady){flames.forEach(f=>f.update(t));if(fires.visible)fireLight.intensity=14+Math.sin(t*9)*2+Math.random()*1.5}
+if(t>=blackoutAt){blackoutUntil=t+.8+Math.random()*.25;blackoutAt=t+6.5+Math.random()}if(t>=nextFlicker){slowFlicker=t+.2+Math.random()*.45;nextFlicker=t+3+Math.random()*5}const dark=t<blackoutUntil;corridorLights.forEach(L=>L.intensity=dark?0:(t<slowFlicker?6+Math.random()*7:25));s.children.filter(o=>o.isHemisphereLight).forEach(L=>L.intensity=dark?0:1.05);
+if(t>28)document.querySelector('#fade').style.opacity=E(28,29.5,t);if(t>30.5){start=n;dl.position.x=-1.6;dr.position.x=1.6;fires.visible=altar.visible=false;fireLight.intensity=0;document.querySelector('#fade').style.opacity=0}r.render(s,c)}
+requestAnimationFrame(loop);addEventListener('resize',()=>{c.aspect=innerWidth/innerHeight;c.updateProjectionMatrix();r.setSize(innerWidth,innerHeight)})</script></body></html>
