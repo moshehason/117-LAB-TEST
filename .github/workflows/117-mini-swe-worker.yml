@@ -63,12 +63,7 @@ jobs:
           if [ -z "${OPENROUTER_API_KEY:-}" ]; then
             echo "ready=false" >> "${GITHUB_OUTPUT}"
             if [ "${{ github.event_name }}" = "issue_comment" ]; then
-              BODY="[117-RESULT]
-agent: mini-swe
-task: ${{ steps.task.outputs.source_id }}
-status: BLOCKED
-model: ${MODEL}
-blocker: OPENROUTER_API_KEY secret is missing; no model call was made."
+              printf -v BODY '%s\n' '[117-RESULT]' 'agent: mini-swe' "task: ${{ steps.task.outputs.source_id }}" 'status: BLOCKED' "model: ${MODEL}" 'blocker: OPENROUTER_API_KEY secret is missing; no model call was made.'
               gh api "repos/${GITHUB_REPOSITORY}/issues/3/comments" -f body="${BODY}"
             fi
             exit 0
@@ -155,13 +150,5 @@ blocker: OPENROUTER_API_KEY secret is missing; no model call was made."
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          BODY="[117-RESULT]
-agent: mini-swe
-task: ${{ steps.task.outputs.source_id }}
-status: ${{ steps.result.outputs.status }}
-model: ${{ steps.cfg.outputs.model }}
-branch: ${{ steps.branch.outputs.name }}
-pr: ${{ steps.result.outputs.pr }}
-worker_outcome: ${{ steps.agent.outcome }}
-review_required: true"
+          printf -v BODY '%s\n' '[117-RESULT]' 'agent: mini-swe' "task: ${{ steps.task.outputs.source_id }}" "status: ${{ steps.result.outputs.status }}" "model: ${{ steps.cfg.outputs.model }}" "branch: ${{ steps.branch.outputs.name }}" "pr: ${{ steps.result.outputs.pr }}" "worker_outcome: ${{ steps.agent.outcome }}" 'review_required: true'
           gh api "repos/${GITHUB_REPOSITORY}/issues/3/comments" -f body="${BODY}"
