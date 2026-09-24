@@ -1,0 +1,168 @@
+name: 117 mini-SWE Worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "Explicit task for mini-SWE-agent"
+        required: true
+        type: string
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: 117-mini-swe
+  cancel-in-progress: false
+
+jobs:
+  mini-swe:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.issue.number == 3 &&
+        github.actor == 'moshehason' &&
+        contains(github.event.comment.body, '[117-TASK]') &&
+        contains(github.event.comment.body, 'agents:') &&
+        (
+          contains(github.event.comment.body, 'mini-swe') ||
+          contains(github.event.comment.body, 'swe-agent')
+        )
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout without push credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Prepare task
+        id: task
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MANUAL_TASK: ${{ inputs.task }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+            gh api "repos/${GITHUB_REPOSITORY}/issues/comments/${{ github.event.comment.id }}" --jq '.body' > /tmp/117-task.txt
+            echo "source_id=${{ github.event.comment.id }}" >> "$GITHUB_OUTPUT"
+          else
+            printf '%s' "$MANUAL_TASK" > /tmp/117-task.txt
+            echo "source_id=manual-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check model configuration
+        id: model
+        env:
+          MODEL: ${{ vars.MINI_SWE_MODEL }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "$MODEL" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            if [ "${{ github.event_name }}" = "issue_comment" ]; then
+              gh api "repos/${GITHUB_REPOSITORY}/issues/3/comments"                 -f body="[117-RESULT]
+agent: mini-swe
+task: ${{ steps.task.outputs.source_id }}
+status: BLOCKED
+blocker: MINI_SWE_MODEL repository variable is not configured. No model call was made and no cost was incurred."
+            fi
+            exit 0
+          fi
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Python
+        if: steps.model.outputs.ready == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install mini-SWE-agent
+        if: steps.model.outputs.ready == 'true'
+        run: python -m pip install --upgrade mini-swe-agent
+
+      - name: Create isolated worker branch
+        if: steps.model.outputs.ready == 'true'
+        id: branch
+        run: |
+          set -euo pipefail
+          BRANCH="agent/mini-swe-${{ steps.task.outputs.source_id }}"
+          git switch -c "$BRANCH"
+          echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Run mini-SWE-agent
+        if: steps.model.outputs.ready == 'true'
+        id: run
+        continue-on-error: true
+        env:
+          MSWEA_MODEL_NAME: ${{ vars.MINI_SWE_MODEL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/117-guard.txt <<'EOF'
+          You are mini-SWE-agent working for the 117 AI TEAM.
+          Work only in this checkout and only on the explicit task below.
+          Do not push, merge, create a PR, alter repository settings, touch secrets, or contact external people.
+          Do not switch branches.
+          Preserve existing LAB experiments.
+          Make the smallest safe implementation, run relevant tests/checks, and leave changes in the working tree.
+          If the task targets TOMO, stop and report that production is inaccessible from this LAB repository.
+          EOF
+          printf '\nUSER TASK:\n' >> /tmp/117-guard.txt
+          cat /tmp/117-task.txt >> /tmp/117-guard.txt
+          mini -y -m "$MSWEA_MODEL_NAME" -t "$(cat /tmp/117-guard.txt)"
+
+      - name: Package result as PR
+        if: steps.model.outputs.ready == 'true' && always()
+        id: result
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config user.name "117 mini-SWE"
+          git config user.email "actions@users.noreply.github.com"
+
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "mini-SWE: task ${{ steps.task.outputs.source_id }}"
+          fi
+
+          AHEAD=$(git rev-list --count origin/main..HEAD)
+          if [ "$AHEAD" -eq 0 ]; then
+            echo "status=NO_CHANGES" >> "$GITHUB_OUTPUT"
+            echo "pr=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          gh auth setup-git
+          git push -u origin "${{ steps.branch.outputs.name }}"
+          PR_URL=$(gh pr create             --base main             --head "${{ steps.branch.outputs.name }}"             --title "mini-SWE: task ${{ steps.task.outputs.source_id }}"             --body "Automated mini-SWE-agent worker result for 117 task ${{ steps.task.outputs.source_id }}. Requires independent review before merge." || true)
+
+          echo "status=READY_FOR_REVIEW" >> "$GITHUB_OUTPUT"
+          echo "pr=$PR_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Report to Issue 3
+        if: steps.model.outputs.ready == 'true' && github.event_name == 'issue_comment' && always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/issues/3/comments"             -f body="[117-RESULT]
+agent: mini-swe
+task: ${{ steps.task.outputs.source_id }}
+status: ${{ steps.result.outputs.status }}
+branch: ${{ steps.branch.outputs.name }}
+pr: ${{ steps.result.outputs.pr }}
+worker_outcome: ${{ steps.run.outcome }}
+review_required: true"
