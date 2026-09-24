@@ -21,7 +21,7 @@ agents:
     role: isolated_bugfix_worker
     execution: github_actions
     workflow: .github/workflows/117-mini-swe-worker.yml
-    status: connected_waiting_for_model
+    status: connected_waiting_for_openrouter_key
     task_selector:
       marker: "[117-TASK]"
       agent_names: ["mini-swe", "swe-agent"]
