@@ -112,13 +112,23 @@ document.querySelector('nav').addEventListener('click',function(e){
   try{knocks=Math.max(0,Math.min(TARGET-1,parseInt(localStorage.getItem(KEY)||'0',10)||0))}catch(e){}
 
   const save=()=>{try{localStorage.setItem(KEY,String(knocks))}catch(e){}};
+  const resetGames=()=>{
+    const gp=document.getElementById('gamesPanel');
+    const gf=document.getElementById('gameFrame');
+    const gi=document.getElementById('gameIframe');
+    if(gp)gp.classList.remove('on');
+    if(gf)gf.classList.remove('on');
+    if(gi)gi.src='about:blank';
+  };
   const openBackrooms=()=>{
     if(layer.classList.contains('on'))return;
+    resetGames();
     layer.classList.add('on');
     layer.setAttribute('aria-hidden','false');
     frame.src='117-backrooms-clean.html?once=1&source=33knocks';
   };
   const closeBackrooms=()=>{
+    resetGames();
     layer.classList.remove('on');
     layer.setAttribute('aria-hidden','true');
     frame.src='about:blank';
@@ -138,7 +148,7 @@ document.querySelector('nav').addEventListener('click',function(e){
     }
   },true);
 
-  close.addEventListener('click',closeBackrooms);
+  close.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();closeBackrooms();});
   addEventListener('message',e=>{
     if(e.source===frame.contentWindow && e.data && e.data.type==='117_BACKROOMS_DONE'){
       closeBackrooms();
