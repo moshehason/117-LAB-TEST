@@ -71,22 +71,30 @@ jobs:
           ];
           const targets = single ? [single] : DEFAULTS;
 
-          const PROMPT = `You are Gemini on the 117 AI TEAM. Visual QA only.
-117 is experimental digital art on a white gallery background, mobile-first (iPhone).
-Check this screenshot of a LAB experiment:
-1) Background truly transparent or clean white gallery (no accidental full-frame opaque matte that looks wrong)?
-2) Is the 117 mark fully visible and not clipped?
-3) Any cheap glow, blue halo, or soft fringe around edges?
-4) Unwanted captions/UI chrome on the artwork?
-5) Obvious mobile layout problems?
-
-Reply in EXACTLY this format (English):
-STATUS: PASS or FAIL
-EXPERIMENT: <filename>
-ISSUES:
-- item
-- item
-If no issues: ISSUES:\n- None`;
+          // Built as an array joined with '\n' (not a multi-line template
+          // literal) so every physical line stays indented inside this
+          // YAML `run: |` block -- a raw template literal's un-indented
+          // continuation lines dedent below the block scalar's established
+          // indentation, which breaks YAML parsing before any job can even
+          // start (that's what was emailing a failure notice on every push).
+          const PROMPT = [
+            'You are Gemini on the 117 AI TEAM. Visual QA only.',
+            '117 is experimental digital art on a white gallery background, mobile-first (iPhone).',
+            'Check this screenshot of a LAB experiment:',
+            '1) Background truly transparent or clean white gallery (no accidental full-frame opaque matte that looks wrong)?',
+            '2) Is the 117 mark fully visible and not clipped?',
+            '3) Any cheap glow, blue halo, or soft fringe around edges?',
+            '4) Unwanted captions/UI chrome on the artwork?',
+            '5) Obvious mobile layout problems?',
+            '',
+            'Reply in EXACTLY this format (English):',
+            'STATUS: PASS or FAIL',
+            'EXPERIMENT: <filename>',
+            'ISSUES:',
+            '- item',
+            '- item',
+            'If no issues: ISSUES:\n- None',
+          ].join('\n');
 
           function gemini(base64, experiment) {
             return new Promise((resolve, reject) => {
@@ -181,27 +189,17 @@ If no issues: ISSUES:\n- None`;
         if: always()
         run: |
           set -euo pipefail
+          # Each BODY is built as adjacent quoted segments joined by $'\n'
+          # literals on a single physical line, rather than a quoted string
+          # with real embedded newlines -- the latter dedents below this
+          # YAML `run: |` block's indentation and breaks parsing before any
+          # job can even start (same root cause as the fix in the previous
+          # step's PROMPT constant; see its comment for the full story).
           if [ ! -f gemini-qa-report.md ]; then
-            BODY="[GEMINI → 117 AI TEAM]
-
-STATUS: ERROR
-
-No report file produced. Check workflow logs.
-
-[117-AUTO]"
+            BODY="[GEMINI → 117 AI TEAM]"$'\n\n'"STATUS: ERROR"$'\n\n'"No report file produced. Check workflow logs."$'\n\n'"[117-AUTO]"
           else
             REPORT=$(cat gemini-qa-report.md)
-            BODY="[GEMINI → 117 AI TEAM]
-
-Automated visual QA (iPhone 390×844 viewport).
-Source: GitHub Actions + Gemini API.
-LAB only — not production.
-
-${REPORT}
-
-Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-[117-AUTO]"
+            BODY="[GEMINI → 117 AI TEAM]"$'\n\n'"Automated visual QA (iPhone 390×844 viewport)."$'\n'"Source: GitHub Actions + Gemini API."$'\n'"LAB only — not production."$'\n\n'"${REPORT}"$'\n\n'"Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"$'\n\n'"[117-AUTO]"
           fi
           # GitHub issue comment body limit safety
           BODY=$(printf '%s' "$BODY" | head -c 55000)
