@@ -51,11 +51,12 @@ jobs:
       github.event_name != 'issue_comment' ||
       (
         github.event.issue.number == 3 &&
+        github.actor == 'moshehason' &&
         github.event.comment.user.type != 'Bot' &&
         github.event.comment.user.login != 'github-actions[bot]' &&
-        !contains(github.event.comment.body, '[CLAUDE') &&
-        !contains(github.event.comment.body, '[CHATGPT') &&
-        !contains(github.event.comment.body, '[117-')
+        contains(github.event.comment.body, '[117-TASK]') &&
+        contains(github.event.comment.body, 'agents:') &&
+        contains(github.event.comment.body, 'claude')
       )
     steps:
       - name: Checkout
@@ -99,7 +100,12 @@ jobs:
             # which would otherwise be wrongly excluded as noise. Newest
             # first.
             CANDIDATES=$(echo "$COMMENTS_JSON" | jq -c '
-              [.[] | select(.user.type != "Bot") | select((.body | test("^\\[CLAUDE")) or (.body | test("^\\[117-(WORKING|DONE):")) | not)]
+              [.[] 
+                | select(.user.type != "Bot")
+                | select(.user.login == "moshehason")
+                | select(.body | test("(?m)^\\[117-TASK\\]"))
+                | select(.body | test("(?im)^agents:[[:space:]]*.*claude"))
+              ]
               | sort_by(.id) | reverse
             ')
             LEN=$(echo "$CANDIDATES" | jq 'length')
