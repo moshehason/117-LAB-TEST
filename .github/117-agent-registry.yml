@@ -1,0 +1,50 @@
+version: 2
+workroom:
+  repository: moshehason/117-LAB-TEST
+  issue: 3
+  production_repository: Tomagato/117-site
+
+agents:
+  chatgpt:
+    role: integrator_and_qa
+    execution: external
+    status: active
+  claude:
+    role: primary_implementation
+    execution: github_actions
+    status: active
+  grok:
+    role: adversarial_review
+    execution: external
+    status: active
+  mini-swe:
+    role: isolated_bugfix_worker
+    execution: github_actions
+    workflow: .github/workflows/117-mini-swe-worker.yml
+    status: connected_waiting_for_model
+    task_selector:
+      marker: "[117-TASK]"
+      agent_names: ["mini-swe", "swe-agent"]
+
+supporting_tools:
+  swe-rex:
+    kind: sandbox_runtime
+    status: optional_later
+  swe-bench:
+    kind: benchmark
+    status: not_an_agent
+  swe-smith:
+    kind: training_data_generator
+    status: not_an_agent
+  codeclash:
+    kind: evaluation_arena
+    status: optional_later
+  sb-cli:
+    kind: benchmark_cli
+    status: not_an_agent
+
+safety:
+  explicit_task_envelope_only: true
+  direct_main_write_by_mini_swe: false
+  independent_review_required: true
+  production_access_required_for_tomo: true
