@@ -25,11 +25,11 @@ for(const s of [-1,1]){const horn=new THREE.Mesh(new THREE.ConeGeometry(.25,1.8,
 const mouth=new THREE.Mesh(new THREE.CircleGeometry(.62,16),new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide}));mouth.position.set(0,-.42,.83);monster.add(mouth);monster.position.set(0,2,-89);monster.scale.setScalar(.01);monster.visible=false;scene.add(monster);
 const amb=new THREE.HemisphereLight(0x777777,0x000000,.42);scene.add(amb);
 cam.position.set(0,1.65,5);
-let start=performance.now(),tilt=0,last=0;
+let start=performance.now(),tilt=0,last=0;const onceMode=new URLSearchParams(location.search).get('once')==='1';let done=false;
 addEventListener('deviceorientation',e=>{if(e.gamma!=null)tilt=THREE.MathUtils.clamp(e.gamma/45,-1,1)},{passive:true});
 let dragX=0,down=false,px=0;addEventListener('pointerdown',e=>{down=true;px=e.clientX});addEventListener('pointerup',()=>down=false);addEventListener('pointermove',e=>{if(down){dragX+=(e.clientX-px)*.0025;px=e.clientX}});
 function ease(a,b,t){t=Math.max(0,Math.min(1,(t-a)/(b-a)));return t*t*(3-2*t)}
-function animate(now){requestAnimationFrame(animate);const t=(now-start)/1000,dt=Math.min((now-last)/1000,.05);last=now;
+function animate(now){if(done)return;requestAnimationFrame(animate);const t=(now-start)/1000,dt=Math.min((now-last)/1000,.05);last=now;
  let z;
  if(t<15) z=5-ease(0,15,t)*74; else z=-69-ease(15,18,t)*5.2;
  const bend=Math.sin(z*.13)*1.2;cam.position.x=THREE.MathUtils.lerp(cam.position.x,bend+tilt*.42+dragX,.05);cam.position.z=z;cam.position.y=1.65+Math.sin(t*8)*.025;
@@ -39,7 +39,7 @@ function animate(now){requestAnimationFrame(animate);const t=(now-start)/1000,dt
  if(t>20.5){monster.visible=false;}
  if(t>23.1){document.getElementById('flash').style.opacity='0';}
  if(t>24){document.getElementById('fade').style.opacity=String(ease(24,25.2,t));}
- if(t>26.2){start=now;doorL.position.x=-1.6;doorR.position.x=1.6;altar.visible=sign.visible=robes.visible=monster.visible=false;monster.scale.setScalar(.01);document.getElementById('fade').style.opacity='0'}
+ if(t>26.2){if(onceMode){done=true;try{parent.postMessage({type:'117_BACKROOMS_DONE'},location.origin)}catch(e){};return}start=now;doorL.position.x=-1.6;doorR.position.x=1.6;altar.visible=sign.visible=robes.visible=monster.visible=false;monster.scale.setScalar(.01);document.getElementById('fade').style.opacity='0'}
  ren.render(scene,cam)}
 requestAnimationFrame(animate);
 addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();ren.setSize(innerWidth,innerHeight)});
