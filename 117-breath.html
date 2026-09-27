@@ -97,8 +97,9 @@ function drawBreathingNumber(t, force) {
     octx.save();
     octx.translate(cx, cy);
     octx.scale(scale, scale);
-    octx.shadowColor = `rgba(255, 120, 90, ${0.15 + force * 0.25})`;
-    octx.shadowBlur = blur;
+    // Keep the breathing layers crisp: no soft outer halo on the white gallery field.
+    octx.shadowColor = 'rgba(0,0,0,0)';
+    octx.shadowBlur = 0;
 
     // 1
     octx.save();
@@ -130,9 +131,9 @@ function drawBreathingNumber(t, force) {
   // Crisp core
   octx.save();
   octx.translate(cx, cy);
-  octx.fillStyle = '#fff5f0';
-  octx.shadowColor = 'rgba(255,140,100,0.6)';
-  octx.shadowBlur = 12 * D;
+  octx.fillStyle = '#ffe5dc';
+  octx.shadowColor = 'rgba(0,0,0,0)';
+  octx.shadowBlur = 0;
 
   octx.save(); octx.translate(-gap, 0); digitPath(octx, 1, s); octx.fill(); octx.restore();
   octx.save(); octx.translate(0, 0);    digitPath(octx, 1, s); octx.fill(); octx.restore();
