@@ -1,0 +1,39 @@
+name: 117 Sitespeed Pilot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: 117-sitespeed-pilot
+  cancel-in-progress: true
+
+jobs:
+  sitespeed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Desktop performance pass
+        run: |
+          mkdir -p sitespeed-result/desktop
+          docker run --rm             -v "$GITHUB_WORKSPACE:/sitespeed.io"             sitespeedio/sitespeed.io:42.7.0             https://moshehason.github.io/117-LAB-TEST/             https://moshehason.github.io/117-LAB-TEST/demo.html             https://moshehason.github.io/117-LAB-TEST/117-time-cut.html             -n 3             -c 4g             --visualMetrics true             --video true             --axe.enable             --summary             --outputFolder sitespeed-result/desktop
+
+      - name: Mobile-emulated performance pass
+        run: |
+          mkdir -p sitespeed-result/mobile
+          docker run --rm             -v "$GITHUB_WORKSPACE:/sitespeed.io"             sitespeedio/sitespeed.io:42.7.0             https://moshehason.github.io/117-LAB-TEST/             https://moshehason.github.io/117-LAB-TEST/demo.html             https://moshehason.github.io/117-LAB-TEST/117-pig-runner.html             -n 3             -c 4g             --mobile             --visualMetrics true             --video true             --axe.enable             --summary             --outputFolder sitespeed-result/mobile
+
+      - name: Upload sitespeed reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 117-sitespeed-report
+          path: sitespeed-result
+          if-no-files-found: warn
+          retention-days: 7
