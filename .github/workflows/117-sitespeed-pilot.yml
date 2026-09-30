@@ -2,6 +2,11 @@ name: 117 Sitespeed Pilot
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - qa/sitespeed-pilot
+    paths:
+      - ".github/workflows/117-sitespeed-pilot.yml"
 
 permissions:
   contents: read
