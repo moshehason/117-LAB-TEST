@@ -1,0 +1,72 @@
+name: 117 OSV Dependency Scan
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - qa/osv-integrate-20261004
+      - main
+    paths:
+      - ".github/workflows/117-osv.yml"
+      - "**/package.json"
+      - "**/package-lock.json"
+      - "**/yarn.lock"
+      - "**/pnpm-lock.yaml"
+      - "**/bun.lock"
+      - "**/requirements*.txt"
+      - "**/poetry.lock"
+      - "**/Pipfile.lock"
+      - "**/go.mod"
+      - "**/go.sum"
+      - "**/Cargo.lock"
+      - "**/composer.lock"
+  pull_request:
+    paths:
+      - "**/package.json"
+      - "**/package-lock.json"
+      - "**/yarn.lock"
+      - "**/pnpm-lock.yaml"
+      - "**/bun.lock"
+      - "**/requirements*.txt"
+      - "**/poetry.lock"
+      - "**/Pipfile.lock"
+      - "**/go.mod"
+      - "**/go.sum"
+      - "**/Cargo.lock"
+      - "**/composer.lock"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: 117-osv-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  osv:
+    name: Scan dependencies with OSV
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Detect supported dependency files
+        id: deps
+        shell: bash
+        run: |
+          if find . -type f \(             -name 'package.json' -o             -name 'package-lock.json' -o             -name 'yarn.lock' -o             -name 'pnpm-lock.yaml' -o             -name 'bun.lock' -o             -name 'requirements*.txt' -o             -name 'poetry.lock' -o             -name 'Pipfile.lock' -o             -name 'go.mod' -o             -name 'go.sum' -o             -name 'Cargo.lock' -o             -name 'composer.lock'           \) -not -path './.git/*' -print -quit | grep -q .; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No supported dependency manifests found; OSV scan skipped."
+          fi
+
+      - name: Run OSV-Scanner 2.6.0
+        if: steps.deps.outputs.found == 'true'
+        continue-on-error: true
+        run: |
+          docker run --rm             -v "$GITHUB_WORKSPACE:/src"             ghcr.io/google/osv-scanner:v2.6.0             scan source --recursive /src
