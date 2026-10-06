@@ -4,7 +4,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageChops
 
-W,H,FPS,DUR = 540,960,24,7
+W,H,FPS,DUR = 1080,1920,24,7
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
 def clamp(v,a,b): return max(a,min(b,v))
@@ -17,13 +17,13 @@ def main():
     seed=int(today.strftime("%Y%j"))+117
     rng=random.Random(seed)
 
-    font=ImageFont.truetype(FONT,220)
+    font=ImageFont.truetype(FONT,440)
     base=Image.new("L",(W,H),0)
     d=ImageDraw.Draw(base)
     box=d.textbbox((0,0),"117",font=font)
     tw,th=box[2]-box[0],box[3]-box[1]
     x0=(W-tw)//2
-    y0=(H-th)//2-10
+    y0=(H-th)//2-20
     d.text((x0,y0),"117",font=font,fill=255)
 
     # deterministic parasite/tissue anchors
@@ -32,7 +32,7 @@ def main():
         for _try in range(500):
             x=rng.randint(x0-5,x0+tw+5); y=rng.randint(y0-5,y0+th+5)
             if 0<=x<W and 0<=y<H and base.getpixel((x,y))>120:
-                anchors.append((x,y,rng.uniform(5,16),rng.uniform(0,math.tau)))
+                anchors.append((x,y,rng.uniform(10,32),rng.uniform(0,math.tau)))
                 break
 
     cmd=["ffmpeg","-hide_banner","-loglevel","error","-y",
@@ -47,7 +47,7 @@ def main():
          "[a0][a1][a2]amix=inputs=3:normalize=0,"
          "afade=t=in:st=0:d=0.25,afade=t=out:st=6.35:d=0.65[a]",
          "-map","0:v:0","-map","[a]",
-         "-c:v","libx264","-preset","medium","-crf","19","-pix_fmt","yuv420p",
+         "-c:v","libx264","-preset","slow","-crf","16","-pix_fmt","yuv420p",
          "-c:a","aac","-b:a","160k","-ar","48000","-ac","2",
          "-movflags","+faststart","-shortest",args.out]
     p=subprocess.Popen(cmd,stdin=subprocess.PIPE)
@@ -71,7 +71,7 @@ def main():
         for b in range(bands):
             y=b*(H//bands)
             strip=mask.crop((0,y,W,min(H,y+bh)))
-            amp=(3+15*chaos)*math.sin(b*0.57+t*2.1)
+            amp=(6+30*chaos)*math.sin(b*0.57+t*2.1)
             warped.paste(strip,(int(amp),y))
 
         # black body
@@ -83,10 +83,10 @@ def main():
         td=ImageDraw.Draw(tissue)
         for k,(ax,ay,r,ph) in enumerate(anchors):
             rr=r*(1+1.7*chaos)
-            px=ax+chaos*34*math.sin(ph+t*(0.8+(k%5)*0.06))
-            py=ay+chaos*28*math.cos(ph*1.4-t*(0.7+(k%7)*0.04))
+            px=ax+chaos*68*math.sin(ph+t*(0.8+(k%5)*0.06))
+            py=ay+chaos*56*math.cos(ph*1.4-t*(0.7+(k%7)*0.04))
             td.ellipse((px-rr,py-rr,px+rr,py+rr),fill=220)
-        tissue=tissue.filter(ImageFilter.GaussianBlur(radius=7+8*chaos))
+        tissue=tissue.filter(ImageFilter.GaussianBlur(radius=14+16*chaos))
         tissue=ImageChops.multiply(tissue,warped)
         pink=Image.new("RGB",(W,H),(255,36,135))
         bg.paste(pink,(0,0),tissue)
@@ -95,11 +95,11 @@ def main():
         if chaos>0.28:
             dr=ImageDraw.Draw(bg,"RGBA")
             for k,(ax,ay,r,ph) in enumerate(anchors[::3]):
-                amp=chaos*(28+9*(k%4))
+                amp=chaos*(56+18*(k%4))
                 ex=ax+amp*math.sin(ph+t*1.45)
                 ey=ay+amp*math.cos(ph*1.7-t*1.1)
-                dr.line((ax,ay,ex,ey),fill=(255,36,135,int(55+115*chaos)),width=max(1,int(1+2*chaos)))
-                rr=2+2*chaos
+                dr.line((ax,ay,ex,ey),fill=(255,36,135,int(55+115*chaos)),width=max(2,int(2+4*chaos)))
+                rr=4+4*chaos
                 dr.ellipse((ex-rr,ey-rr,ex+rr,ey+rr),fill=(255,36,135,int(110+100*chaos)))
 
         # small misregistration shadow = physical print/object feeling
