@@ -1,0 +1,102 @@
+name: 117 Daily Story Fallback
+
+on:
+  schedule:
+    - cron: '30 4 * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/117-daily-story-fallback.yml'
+      - 'scripts/generate_117_story.sh'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: 117-daily-story-fallback
+  cancel-in-progress: false
+
+jobs:
+  generate-and-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          path: source
+          persist-credentials: false
+
+      - name: Checkout delivery branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: story-delivery
+          path: delivery
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: Ensure ffmpeg
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          ffmpeg -version | head -n 1
+          ffprobe -version | head -n 1
+
+      - name: Generate dated 117 fallback video
+        shell: bash
+        run: |
+          set -euo pipefail
+          DATE_LOCAL="$(TZ=Asia/Jerusalem date +%F)"
+          chmod +x source/scripts/generate_117_story.sh
+          source/scripts/generate_117_story.sh "delivery/story/${DATE_LOCAL}.mp4"
+          cp "delivery/story/${DATE_LOCAL}.json" "delivery/story/current.json"
+
+      - name: Independent QA gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          DATE_LOCAL="$(TZ=Asia/Jerusalem date +%F)"
+          FILE="delivery/story/${DATE_LOCAL}.mp4"
+          test -s "$FILE"
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "$FILE")" = "h264"
+          test "$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "$FILE")" = "aac"
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$FILE")" = "1080x1920"
+          ffmpeg -v error -i "$FILE" -f null - >/dev/null
+          grep -q '"audio_present": true' "delivery/story/${DATE_LOCAL}.json"
+          grep -q "\"date\": \"${DATE_LOCAL}\"" "delivery/story/${DATE_LOCAL}.json"
+
+      - name: Keep a short rolling archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd delivery
+          mkdir -p story
+          mapfile -t vids < <(find story -maxdepth 1 -type f -name '20??-??-??.mp4' | sort)
+          if (( ${#vids[@]} > 14 )); then
+            for f in "${vids[@]:0:${#vids[@]}-14}"; do
+              rm -f "$f" "${f%.mp4}.json"
+            done
+          fi
+
+      - name: Publish delivery branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd delivery
+          git config user.name "117 Story Bot"
+          git config user.email "117-story-bot@users.noreply.github.com"
+          git add story
+          if git diff --cached --quiet; then
+            echo "No delivery changes"
+            exit 0
+          fi
+          DATE_LOCAL="$(TZ=Asia/Jerusalem date +%F)"
+          git commit -m "117 story fallback ${DATE_LOCAL}"
+          git push origin HEAD:story-delivery
