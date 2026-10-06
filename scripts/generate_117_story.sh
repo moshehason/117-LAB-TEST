@@ -18,7 +18,7 @@ DUR="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$OUT")"
 
 [[ "$V_CODEC" == "h264" ]] || { echo "QA fail video codec=$V_CODEC" >&2; exit 21; }
 [[ "$A_CODEC" == "aac" ]] || { echo "QA fail audio codec=$A_CODEC" >&2; exit 22; }
-[[ "$WH" == "540x960" || "$WH" == "1080x1920" ]] || { echo "QA fail dimensions=$WH" >&2; exit 23; }
+[[ "$WH" == "1080x1920" ]] || { echo "QA fail dimensions=$WH" >&2; exit 23; }
 awk -v d="$DUR" 'BEGIN { exit !(d >= 6.8 && d <= 7.2) }' || { echo "QA fail duration=$DUR" >&2; exit 24; }
 ffmpeg -v error -i "$OUT" -f null - >/dev/null 2>&1 || { echo "QA fail full decode" >&2; exit 25; }
 
@@ -29,8 +29,8 @@ cat > "$META" <<JSON
 {
   "date": "$DATE_LOCAL",
   "kind": "117-daily-weird-organism",
-  "width": 540,
-  "height": 960,
+  "width": 1080,
+  "height": 1920,
   "duration_seconds": 7,
   "video_codec": "h264",
   "audio_codec": "aac",
