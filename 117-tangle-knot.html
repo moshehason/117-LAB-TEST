@@ -1,0 +1,171 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>117 TANGLE KNOT</title><style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;touch-action:none}
+.stage{position:absolute;inset:0;display:grid;place-items:center;perspective:1200px}
+.rig{position:relative;width:min(86vw,760px);height:min(62vw,560px);transform-style:preserve-3d;will-change:transform;filter:drop-shadow(0 26px 20px #0004)}
+canvas.art{position:absolute;inset:0;width:100%;height:100%;display:none}
+canvas.art.on{display:block}
+.sheen{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 44%,rgba(255,255,255,.9) 49.5%,transparent 55%);background-size:320% 320%;mix-blend-mode:screen;opacity:0;animation:sheenmove 7s linear infinite}
+.rig.matte .sheen{opacity:.16;mix-blend-mode:soft-light}
+.rig.chrome .sheen{opacity:.3;mix-blend-mode:screen}
+@keyframes sheenmove{0%{background-position:0% 0%}100%{background-position:200% 200%}}
+.toggle{position:fixed;left:50%;transform:translateX(-50%);bottom:max(56px,env(safe-area-inset-bottom));display:flex;gap:8px;z-index:3}
+.toggle button{font:700 10px/1 Arial;letter-spacing:.14em;padding:10px 16px;border-radius:999px;border:1px solid #0003;background:#eee;color:#111;opacity:.55}
+.toggle button.sel{opacity:1;background:#111;color:#fff;border-color:#111}
+.tag,.hint{position:fixed;bottom:max(14px,env(safe-area-inset-bottom));font:700 9px Arial;letter-spacing:.18em;color:#111;z-index:3}
+.tag{left:16px}
+.hint{right:16px;color:#777}
+</style></head>
+<body>
+<div class="stage"><div class="rig chrome" id="rig">
+<canvas class="art on" id="cnv"></canvas>
+<div class="sheen"></div>
+</div></div>
+<div class="toggle"><button id="bMatte">MATTE</button><button id="bChrome" class="sel">CHROME</button></div>
+<div class="tag">117 / TANGLE KNOT</div><div class="hint">DRAG TO TURN</div>
+<script>
+(function(){
+var rig=document.getElementById('rig'),cnv=document.getElementById('cnv'),ctx=cnv.getContext('2d');
+var bMatte=document.getElementById('bMatte'),bChrome=document.getElementById('bChrome');
+var mode='chrome', worms=[], dpr=Math.min(2,window.devicePixelRatio||1), W=0, H=0;
+
+function sizeCanvas(){
+  var r=rig.getBoundingClientRect();
+  W=Math.max(1,Math.round(r.width)); H=Math.max(1,Math.round(r.height));
+  cnv.width=Math.round(W*dpr); cnv.height=Math.round(H*dpr);
+  cnv.style.width=W+'px'; cnv.style.height=H+'px';
+}
+
+function buildMask(){
+  var m=document.createElement('canvas');
+  m.width=cnv.width; m.height=cnv.height;
+  var mctx=m.getContext('2d');
+  mctx.fillStyle='#000'; mctx.textAlign='center'; mctx.textBaseline='middle';
+  var size=Math.floor(cnv.height*0.82);
+  mctx.font='900 '+size+'px Arial Black, Impact, Arial, sans-serif';
+  mctx.fillText('117', cnv.width/2, cnv.height*0.52);
+  var data=mctx.getImageData(0,0,m.width,m.height).data;
+  return function inside(x,y){
+    x=Math.round(x); y=Math.round(y);
+    if(x<0||y<0||x>=m.width||y>=m.height) return false;
+    return data[(y*m.width+x)*4+3] > 120;
+  };
+}
+
+function genWorms(){
+  var inside=buildMask();
+  var step=Math.max(5, Math.round(cnv.height*0.028));
+  var pts=[];
+  for(var y=step; y<cnv.height-step; y+=step){
+    for(var x=step; x<cnv.width-step; x+=step){
+      if(inside(x,y)) pts.push({x:x,y:y});
+    }
+  }
+  for(var i=pts.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=pts[i];pts[i]=pts[j];pts[j]=t;}
+  var out=[];
+  var target=Math.min(150, Math.max(55, Math.round(pts.length*0.36)));
+  var pi=0, guard=0;
+  while(out.length<target && guard<target*6){
+    guard++;
+    var p = pts[pi % pts.length]; pi++;
+    if(!p) break;
+    var jx=p.x+(Math.random()-0.5)*step*0.6, jy=p.y+(Math.random()-0.5)*step*0.6;
+    if(!inside(jx,jy)) continue;
+    var worm=walkWorm(jx,jy,inside,cnv.width/W);
+    if(worm.length>4) out.push(worm);
+  }
+  return out;
+}
+
+function walkWorm(x0,y0,inside,scale){
+  var pts=[{x:x0,y:y0}];
+  var angle=Math.random()*Math.PI*2;
+  var stepLen=9*scale;
+  var steps=22+Math.floor(Math.random()*70);
+  var x=x0,y=y0;
+  for(var i=0;i<steps;i++){
+    var ang=angle,nx,ny,tries=0,found=false;
+    while(tries<6){
+      ang = angle + (Math.random()-0.5)*0.32;
+      nx = x+Math.cos(ang)*stepLen;
+      ny = y+Math.sin(ang)*stepLen;
+      if(inside(nx,ny)){found=true;break;}
+      tries++;
+    }
+    if(!found){
+      ang = angle + Math.PI*(Math.random()<0.5?0.5:-0.5);
+      nx = x+Math.cos(ang)*stepLen; ny = y+Math.sin(ang)*stepLen;
+      if(!inside(nx,ny)) break;
+    }
+    angle=ang; x=nx; y=ny;
+    pts.push({x:x,y:y});
+  }
+  return pts;
+}
+
+function strokeSmooth(ctx,pts){
+  if(pts.length<2) return;
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x,pts[0].y);
+  for(var i=1;i<pts.length-1;i++){
+    var mx=(pts[i].x+pts[i+1].x)/2, my=(pts[i].y+pts[i+1].y)/2;
+    ctx.quadraticCurveTo(pts[i].x,pts[i].y,mx,my);
+  }
+  ctx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);
+  ctx.stroke();
+}
+
+var PAL = {
+  matte:{outline:'rgba(96,99,103,.9)', base:'rgba(179,182,186,1)', shadow:'rgba(140,143,147,.3)', hi:'rgba(255,255,255,.13)', off:1.6, w:[15,22]},
+  chrome:{outline:'rgba(4,4,6,.96)', base:'rgba(60,63,67,1)', shadow:'rgba(14,15,17,.4)', hi:'rgba(255,255,255,.2)', off:2.4, w:[15,22]}
+};
+
+function render(){
+  var scale=cnv.width/W;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,cnv.width,cnv.height);
+  ctx.lineJoin='round'; ctx.lineCap='round';
+  var pal=PAL[mode];
+  for(var pass=0; pass<4; pass++){
+    for(var i=0;i<worms.length;i++){
+      var w = pal.w[0] + (i%5)*((pal.w[1]-pal.w[0])/5);
+      w *= scale;
+      if(pass===0){ ctx.strokeStyle=pal.outline; ctx.lineWidth=w+5*scale; strokeSmooth(ctx,worms[i]); }
+      else if(pass===1){ ctx.strokeStyle=pal.base; ctx.lineWidth=w; strokeSmooth(ctx,worms[i]); }
+      else if(pass===2){ ctx.strokeStyle=pal.shadow; ctx.lineWidth=Math.max(1,w*0.46);
+        ctx.save(); ctx.translate(pal.off*scale,pal.off*scale); strokeSmooth(ctx,worms[i]); ctx.restore(); }
+      else { ctx.strokeStyle=pal.hi; ctx.lineWidth=Math.max(1,w*0.34);
+        ctx.save(); ctx.translate(-pal.off*scale,-pal.off*scale); strokeSmooth(ctx,worms[i]); ctx.restore();
+        if(mode==='chrome'){
+          ctx.save(); ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=Math.max(1,w*0.18);
+          ctx.translate(pal.off*1.8*scale,pal.off*1.8*scale); strokeSmooth(ctx,worms[i]); ctx.restore();
+        }
+      }
+    }
+  }
+}
+
+function rebuild(){ sizeCanvas(); worms=genWorms(); render(); }
+
+bMatte.onclick=function(){ mode='matte'; rig.classList.remove('chrome'); rig.classList.add('matte'); bMatte.classList.add('sel'); bChrome.classList.remove('sel'); render(); };
+bChrome.onclick=function(){ mode='chrome'; rig.classList.remove('matte'); rig.classList.add('chrome'); bChrome.classList.add('sel'); bMatte.classList.remove('sel'); render(); };
+
+var resizeT=null;
+window.addEventListener('resize', function(){ clearTimeout(resizeT); resizeT=setTimeout(rebuild,150); });
+
+// drag-to-turn, same interaction language as 117-chrome-object.html
+var drag=0,lx=0,ly=0,rx=-7,ry=14,tx=rx,ty=ry;
+rig.onpointerdown=function(q){drag=1;lx=q.clientX;ly=q.clientY;rig.setPointerCapture(q.pointerId);};
+rig.onpointermove=function(q){if(!drag)return;ty+=(q.clientX-lx)*.4;tx=Math.max(-32,Math.min(32,tx-(q.clientY-ly)*.26));lx=q.clientX;ly=q.clientY;};
+rig.onpointerup=rig.onpointercancel=function(){drag=0;};
+function loop(){
+  if(!drag) ty+=.08;
+  rx+=(tx-rx)*.06; ry+=(ty-ry)*.06;
+  rig.style.transform='rotateX('+rx+'deg) rotateY('+ry+'deg)';
+  requestAnimationFrame(loop);
+}
+rebuild();
+loop();
+})();
+</script>
+</body></html>
