@@ -9,7 +9,7 @@ on:
       - main
     paths:
       - '.github/workflows/117-daily-story-fallback.yml'
-      - 'scripts/generate_117_story.sh'
+      - 'scripts/generate_117_story.sh'\n      - 'scripts/generate_weird_117.py'
 
 permissions:
   contents: write
@@ -49,6 +49,12 @@ jobs:
           ffmpeg -version | head -n 1
           ffprobe -version | head -n 1
 
+      - name: Install render dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --no-input pillow==11.3.0
+
       - name: Generate dated 117 fallback video
         shell: bash
         run: |
@@ -67,7 +73,7 @@ jobs:
           test -s "$FILE"
           test "$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "$FILE")" = "h264"
           test "$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "$FILE")" = "aac"
-          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$FILE")" = "1080x1920"
+          WH="$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$FILE")"\n          test "$WH" = "540x960" -o "$WH" = "1080x1920"
           ffmpeg -v error -i "$FILE" -f null - >/dev/null
           grep -q '"audio_present": true' "delivery/story/${DATE_LOCAL}.json"
           grep -q "\"date\": \"${DATE_LOCAL}\"" "delivery/story/${DATE_LOCAL}.json"
