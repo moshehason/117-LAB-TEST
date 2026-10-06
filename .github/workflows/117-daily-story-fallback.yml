@@ -75,7 +75,7 @@ jobs:
           test "$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "$FILE")" = "h264"
           test "$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "$FILE")" = "aac"
           WH="$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$FILE")"
-          test "$WH" = "540x960" -o "$WH" = "1080x1920"
+          test "$WH" = "1080x1920"
           ffmpeg -v error -i "$FILE" -f null - >/dev/null
           grep -q '"audio_present": true' "delivery/story/${DATE_LOCAL}.json"
           grep -q "\"date\": \"${DATE_LOCAL}\"" "delivery/story/${DATE_LOCAL}.json"
