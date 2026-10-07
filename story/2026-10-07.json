@@ -1,15 +1,22 @@
 {
-  "date": "2026-10-07",
-  "kind": "117-daily-weird-organism",
-  "width": 1080,
-  "height": 1920,
-  "duration_seconds": 7,
-  "video_codec": "h264",
-  "audio_codec": "aac",
-  "audio_present": true,
-  "sha256": "c41d41b35ed5cfacfec8a15b10ecf0c1c817a367a92aa970dfe2b67e1be4f051",
-  "bytes": 581029,
-  "source": "procedural-original",
-  "safe_for_story": true,
-  "concept": "black 117 organism with fluorescent pink internal tissue and tendrils"
+    "asset_id":  "story-2026-10-07-ink",
+    "concept":  "Ink Reformation: black 117 dissolves into macro ink in clear water, then reforms; animated 117 sign-off",
+    "source_sha256":  "4fa1243042801ebe648402321a1b151f3a224e4d94b715a633f301f1f0e66450",
+    "final_sha256":  "f6e9c575923edebf8c5b215c2ab1fa6f9203c5304dde034c89a4c01232ba7fcc",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  13,
+    "size_bytes":  3631778,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized underwater bed (brown-noise water, 55/82 Hz drones, filtered blips), generated locally with ffmpeg by Claude; no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -16.5,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "visuals_changed":  false,
+    "publication_state":  "READY_NOT_POSTED"
 }
