@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-07-blob",
+    "concept":  "BONUS: a translucent iridescent pink slime blob swallows the black 117 and spits it back out | The Blob 1988 practical slime, white studio",
+    "source_sha256":  "caf89f0c6d38f3f63d0e19bc072915b2cda0483d5ad6107253871c21501fa46c",
+    "final_sha256":  "2295bd50248415f7a5e7a43ce21ffcdd01ba0bd03275a6587891f5e6887f845d",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  13,
+    "size_bytes":  4035842,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -17.1,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
