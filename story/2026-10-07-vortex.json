@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-07-vortex",
+    "concept":  "117 VORTEX: black/white op-art tunnel of spinning 117s that collapses into one clean 117 (made locally with Remotion, no AI)",
+    "source_sha256":  "b2677fbf9fc1971afc39ae786cdd09be268b919c80807b0c01f03c6bf04cf214",
+    "final_sha256":  "67f10f2d18607e55a0961984d33a1e394e82006c3bebeea6a9d320d5f2463083",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  13,
+    "size_bytes":  16511162,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -17.1,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
