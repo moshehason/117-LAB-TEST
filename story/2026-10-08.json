@@ -1,15 +1,21 @@
 {
-  "date": "2026-10-08",
-  "kind": "117-daily-weird-organism",
-  "width": 1080,
-  "height": 1920,
-  "duration_seconds": 7,
-  "video_codec": "h264",
-  "audio_codec": "aac",
-  "audio_present": true,
-  "sha256": "a0cb3d6f4d31b50bdcd8a574f64ba536f67cb09e4a3cf57df6ab7f2b9d5062d0",
-  "bytes": 590662,
-  "source": "procedural-original",
-  "safe_for_story": true,
-  "concept": "black 117 organism with fluorescent pink internal tissue and tendrils"
+    "asset_id":  "story-2026-10-08",
+    "concept":  "The numerals 117 grow fur that ripples like wind in a field, then shed it all at once like a moulting animal. Static frontal camera, the 117 stays centered and readable at the start. | David Lynch dream, slow and unsettling, soft flicker, white room, 16mm film grain",
+    "source_sha256":  "16be798bb7e6c8f9a537037f2fbb66f6616e296923ad5eb643de94e2e212645b",
+    "final_sha256":  "d44fc9615136a25080a2003bdba64f5795ace68a31d86cf55eb02fb1f9e121fd",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  13,
+    "size_bytes":  1331144,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -17,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
 }
