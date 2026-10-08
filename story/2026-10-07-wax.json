@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-07-wax",
+    "concept":  "117 turns to soft wax sagging under invisible heat, faces pressing out from inside | 1987 horror, practical slime, grainy 35mm, white gallery (yesterday\u0027s daily, re-delivered after an outro bug fix)",
+    "source_sha256":  "5156ca46769b8371cc31b1aa6914b181b57bddd3f100339e02c08247596707c1",
+    "final_sha256":  "5661491691d8c03d3e09e4b32ee6d03e7225b2483ad95b412e471f9a66a5c061",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  13,
+    "size_bytes":  1714827,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -17.1,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
