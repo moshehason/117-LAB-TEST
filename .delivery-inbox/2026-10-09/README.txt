@@ -1,0 +1,1 @@
+Tension Score 117 delivery staging. Binary chunks are base64 text; one-time GitHub Actions assembly verifies SHA-256 before publishing to story-delivery.
