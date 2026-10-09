@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-09",
+  "asset_id": "story-2026-10-09-tension-score",
+  "concept": "Tension Score 117 — a field of black kinetic strings bends through a fully readable 117 and settles into a clean gallery mark.",
+  "generator": "Codex + Remotion 4.0.534, local procedural render",
+  "final_sha256": "66548f993c41add6d82a514ba01038517c1353aefa5245d7d9400a750f71af78",
+  "size_bytes": 2372332,
+  "video": {
+    "codec": "h264",
+    "profile": "High",
+    "pixel_format": "yuv420p",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "duration_seconds": 12
+  },
+  "audio": {
+    "codec": "aac",
+    "profile": "LC",
+    "sample_rate": 48000,
+    "channels": 2,
+    "layout": "stereo",
+    "integrated_loudness_lufs": -15.9,
+    "mean_db": -17.2,
+    "peak_db": -4.5,
+    "source": "Original procedural synthesis: brown-noise tension bed, 58.5/117 Hz drones and filtered impulses",
+    "license": "Original work created for 117; no third-party audio"
+  },
+  "qa": {
+    "full_decode": "PASS",
+    "visual_frames": "PASS — 117 complete, centered and readable at 0.5s, 4s, 8s and 11.5s",
+    "faststart": true,
+    "safe_for_story": true
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
