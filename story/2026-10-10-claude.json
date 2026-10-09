@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-10",
+    "concept":  "The numerals 117 become soft wax that sags under an invisible heat, faces pressing out from inside the wax. Static frontal camera, the 117 stays centered and readable at the start. | late 1990s PlayStation 1 graphics, low-poly, dithered textures, white void",
+    "source_sha256":  "4bae896b6034231b2882dd38eea403efc96956d358c18a10de4ece7b6658b275",
+    "final_sha256":  "48a070591f4f62f2ae71c9f42f615b4cd2a703f027ccaa4c945ba4fab4b56e5b",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  13,
+    "size_bytes":  3450472,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -16.4,
+                     "max_volume_db":  -3.6,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
