@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-08",
+  "date": "2026-10-09",
   "kind": "117-daily-weird-organism",
   "width": 1080,
   "height": 1920,
@@ -7,8 +7,8 @@
   "video_codec": "h264",
   "audio_codec": "aac",
   "audio_present": true,
-  "sha256": "a0cb3d6f4d31b50bdcd8a574f64ba536f67cb09e4a3cf57df6ab7f2b9d5062d0",
-  "bytes": 590662,
+  "sha256": "64925584ecc5de5436b3844989bb7186ce3d79aef6e57f9ba1ef46c3e73e8142",
+  "bytes": 567997,
   "source": "procedural-original",
   "safe_for_story": true,
   "concept": "black 117 organism with fluorescent pink internal tissue and tendrils"
