@@ -10,9 +10,6 @@ on:
       - "117-*.html"
       - "demo.html"
       - ".github/workflows/117-gemini-visual-qa.yml"
-  schedule:
-    # Every 6 hours (aligned with autonomous studio)
-    - cron: "15 */6 * * *"
   workflow_dispatch:
     inputs:
       experiment:
