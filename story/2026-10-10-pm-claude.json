@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-10-pm",
+    "concept":  "The numerals 117 turn into liquid mercury that splashes upward against gravity and reforms | David Lynch Eraserhead, black and white, 16mm film grain",
+    "source_sha256":  "8fe4130356e635b95bb0a89df45925d8a5f22f5f5236ad04dfec064853f17db8",
+    "final_sha256":  "39025e254d4ac8259789663b9e2a4960168ae48ae7b8e1bd86d8165190b1755a",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  13,
+    "size_bytes":  2790700,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -16.4,
+                     "max_volume_db":  -3.6,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
