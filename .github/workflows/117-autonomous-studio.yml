@@ -5,9 +5,6 @@ name: 117 Autonomous Studio
 # there rather than duplicating it into a repo file.
 
 on:
-  schedule:
-    # Every 6 hours.
-    - cron: "0 */6 * * *"
   workflow_dispatch:
     inputs:
       test_comment_id:
@@ -45,8 +42,8 @@ jobs:
     # new comment is (a) actually on Issue #3, (b) not from a bot/automation
     # account, and (c) not one of this system's own status/report markers.
     # Comments that fail this (e.g. a Claude/ChatGPT handoff, a lock, or a
-    # done marker) never trigger an immediate run - the next scheduled tick
-    # (every 6 hours) is the backstop that eventually processes anything real.
+    # done marker) do not trigger a run. Use workflow_dispatch for any
+    # deliberate manual recovery instead of periodic polling.
     if: >
       github.event_name != 'issue_comment' ||
       (
