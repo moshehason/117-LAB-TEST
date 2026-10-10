@@ -7,10 +7,6 @@ on:
         description: Explicit task for mini-SWE-agent
         required: true
         type: string
-  issue_comment:
-    types:
-      - created
-
 permissions:
   contents: write
   issues: write
@@ -22,7 +18,7 @@ concurrency:
 
 jobs:
   mini_swe:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.issue.number == 3 && github.actor == 'moshehason' && contains(github.event.comment.body, '[117-TASK]') && contains(github.event.comment.body, 'mini-swe')) }}
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
