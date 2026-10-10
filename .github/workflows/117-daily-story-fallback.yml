@@ -1,8 +1,6 @@
 name: 117 Daily Story Fallback
 
 on:
-  schedule:
-    - cron: '30 4 * * *'
   workflow_dispatch:
   push:
     branches:
