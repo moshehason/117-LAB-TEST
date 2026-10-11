@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-11-goo1967",
+    "concept":  "1967 VHS goo horror: 117 title, phone, smiley, TV man and the bar friends evolve into goo, oil and water",
+    "source_sha256":  "47ceec2caf510578d63572b28686388879818790f2dd7a27e2e34cc058d4818f",
+    "final_sha256":  "8ece51601bafb6350005f081a76fd845ae16a663bd75a91e5ae47aa41dc3d683",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  31.3,
+    "size_bytes":  25056710,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -16.4,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
