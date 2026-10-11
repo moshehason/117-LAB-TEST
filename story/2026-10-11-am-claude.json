@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-11-am",
+    "concept":  "The numerals 117 are made of black smoke that twists into a screaming face and back into 117. Static frontal camera, the 117 stays centered and readable at the start. | black and white 1920s German expressionist silent film, Nosferatu shadows, scratched film, strictly monochrome black and white, no color",
+    "source_sha256":  "9811b06972325014e62318ecbe4f6ec618de2b21604b6882fb3edbb90db0607e",
+    "final_sha256":  "33e1e9810d91b54e2200dd6070003402352f5e377936fd878e2390b44bc7c7a5",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  13,
+    "size_bytes":  2378350,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -16.4,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
