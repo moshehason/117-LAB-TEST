@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-12-pm",
+    "concept":  "Black roots and veins grow out of the numerals 117 and spread across the white floor, pulsing. Static frontal camera, the 117 stays centered and readable at the start. | 1967 psychedelic horror, oil and water light show projected on the goo, faded colors, unsettling, film grain, cinematic, highly detailed",
+    "source_sha256":  "693a0a0dcda32f2bb78526e7636146914e9fc293ece2155f650117c9e073bf79",
+    "final_sha256":  "98041f675b95b6be47bd8ec8676c74c0ea1c6dc59b32ab950f10f564038c7baf",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  13,
+    "size_bytes":  9626416,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -16.8,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
