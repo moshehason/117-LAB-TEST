@@ -1,0 +1,21 @@
+{
+  "asset_id": "story-2026-10-13-eatall",
+  "concept": "Everyone eats everyone: VHS horror, paintings, friends, the cat and the penguin devour each other, reversed low phone voice and eating sounds",
+  "source_sha256": "6a62e5ee2a326b965162725a4e604b9d32c526567f61dea961445ab84d8d6995",
+  "final_sha256": "a0387085bcde1019d800a018898f88726028e40c22ec4faf4e571a466df9fb34",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "duration_s": 39.3,
+  "size_bytes": 71363401,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -16.3,
+    "max_volume_db": -8.4,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
