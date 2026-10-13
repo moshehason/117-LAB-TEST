@@ -1,0 +1,21 @@
+{
+    "asset_id":  "post-2026-10-13-chicks",
+    "concept":  "Chicks burst out of the yellow work, drown in black tar, the tar becomes a dentist drilling teeth, ending on 117 made of McDonald\u0027s nuggets",
+    "source_sha256":  null,
+    "final_sha256":  null,
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  23.5,
+    "size_bytes":  36383277,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -16.7,
+                     "max_volume_db":  -4.4,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
