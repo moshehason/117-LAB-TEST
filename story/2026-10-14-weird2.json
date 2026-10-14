@@ -1,0 +1,21 @@
+{
+    "asset_id":  "post-2026-10-14-weird2",
+    "concept":  "Weird 117 film: Center Girl comes alive (long human hair grows rapidly out of the artwork and waves as if underwater), then everything melts into thick glossy black tar that bubbles and swallows it all, it becomes a grinning clown face made of the same material, laughing silently, ending on 117 made of shiny wet spaghetti in tomato sauce, on a checkered tablecloth",
+    "source_sha256":  "19772bc92720e35abd491b717e6e7df011c8a0338934d0fbacc02c9c68aafed5",
+    "final_sha256":  "27bb755fa84341f61c0e73c14d4e0d6f8fbdb87dbf98c3e8f6f7a7dee13f806d",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  19.4,
+    "size_bytes":  26731735,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -17.1,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
