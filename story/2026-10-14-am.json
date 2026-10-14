@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-14-am",
+    "concept":  "The numerals 117 shatter like black glass in slow motion, the shards hang in the air and reassemble. Static frontal camera, the 117 stays centered and readable at the start. | 1960s B-movie The Blob, thick glossy goo, oil sheen, faded colors, creeping dread, film grain, cinematic, highly detailed",
+    "source_sha256":  "bbb677046a72497ba4cdefe2b4c5b182e03a444f1ba60afd95da2c44d36b0e39",
+    "final_sha256":  "3d6175269d6f0689fee8262a6a0859a67ad480b9895b25b9373c12320215e7f2",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  13,
+    "size_bytes":  8332547,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -17.1,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
