@@ -1,0 +1,21 @@
+{
+    "asset_id":  "post-2026-10-14-weird1",
+    "concept":  "Weird 117 film: My First My Last comes alive (small black spiders pour out of the cracks of the artwork in a dense swarm), then everything turns into wobbling green jelly that shakes and splits, it becomes a giant mouth that eats itself, chewing and swallowing in a loop, ending on 117 made of sushi rice and salmon pieces, on a black slate plate",
+    "source_sha256":  null,
+    "final_sha256":  null,
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  19.4,
+    "size_bytes":  23697559,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -17.1,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
