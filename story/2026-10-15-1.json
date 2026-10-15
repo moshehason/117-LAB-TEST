@@ -1,0 +1,21 @@
+{
+    "asset_id":  "feed-2026-10-15-1",
+    "concept":  "117 NERO ROSA: the works My First My Last, Decay, Donald wrapped 360 degrees, two-tone, church voices chanting the colours, VHS",
+    "source_sha256":  "f9923ebf1ca7f168b5e1f0068dc60fa061d9ee0c06f487b71101607ba14e469c",
+    "final_sha256":  "8b63b44dfeb5d10fccd7887a47606891d2a858437375ca6e44e1d48de488ce45",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  22.6,
+    "size_bytes":  36201997,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -17.2,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
