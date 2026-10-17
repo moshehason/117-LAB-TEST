@@ -1,0 +1,21 @@
+{
+    "asset_id":  "feed-2026-10-17-weird2",
+    "concept":  "Weird 117 film: Ghost comes alive (the artwork sweats thick golden honey that drips down, and bees crawl out of it), then everything turns into melting chocolate that pours down in thick waves, it becomes a hungry dog made of the material that licks its lips and wags its tail, ending on 117 made of sushi rice and salmon pieces, on a black slate plate",
+    "source_sha256":  "8509d8a803d335f0fb6fb34a5ed4b5a6b33dc3824eedd16094ffb3a306d26297",
+    "final_sha256":  "57119ff1a4814d717e621d371413d4747c6a370311384036840cec2b95ea0c3a",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  19.4,
+    "size_bytes":  23962475,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -16.5,
+                     "max_volume_db":  -3.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
