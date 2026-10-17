@@ -1,0 +1,21 @@
+{
+    "asset_id":  "feed-2026-10-17-weird1",
+    "concept":  "Weird 117 film: Hot Kiss comes alive (the artwork starts breathing, its surface rising and falling like the belly of a sleeping animal), then everything melts into thick glossy black tar that bubbles and swallows it all, it becomes a strange old barber who cuts the hair of the material with huge scissors, ending on 117 made of shiny wet spaghetti in tomato sauce, on a checkered tablecloth",
+    "source_sha256":  "4aa48a98ea9e87d47ac2ddeba75f302bda55fd556195a5ebdc7e982354b3d7df",
+    "final_sha256":  "b5a13b0ac7e03a608183d95a453f4ee79f4e034ce4e6756ce85faf9c62442e54",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  19.4,
+    "size_bytes":  23478360,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -16.5,
+                     "max_volume_db":  -3.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
