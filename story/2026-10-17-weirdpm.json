@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-17-weirdpm",
+    "concept":  "Weird 117 film: Center Girl comes alive (small black spiders pour out of the cracks of the artwork in a dense swarm), then everything turns into pink bubblegum that stretches, inflates into bubbles and pops, it becomes a nervous butcher sharpening long knives, the blades shining, ending on 117 made of raw pink meat with white fat marbling, on a butcher\u0027s wooden block",
+    "source_sha256":  "5d812628b2823cc74c9179a80d7805c48add5b15ffb1fcb21bf24ed5d402f751",
+    "final_sha256":  "67a4bec1691aede3e5711a52a082cd7a223ae34bb942f7549dbf2a19dc2786e8",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  19.4,
+    "size_bytes":  34196177,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -16.5,
+                     "max_volume_db":  -3.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
