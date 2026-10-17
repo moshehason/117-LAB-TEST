@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-18-exorcist",
+    "concept":  "117 exorcism: a demon inside the 117 screen on a 1986 CCTV tape, a priest casts it out, full VHS, Latin voices",
+    "source_sha256":  "1e22294074837ecb37f87fbbf03661eff96accb589470a696111a4637350a1cc",
+    "final_sha256":  "c62fe187d3dfa9e537a979bec29ec7cc367d48d8809efa219786360c8870505c",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  23.2,
+    "size_bytes":  32409744,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -17.2,
+                     "max_volume_db":  -1.4,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
