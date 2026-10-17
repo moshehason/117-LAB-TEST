@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-17-weirdam",
+    "concept":  "Weird 117 film: My First My Last comes alive (hundreds of small pink worms wriggle out of the surface of the artwork and crawl toward the camera), then everything turns into wobbling green jelly that shakes and splits, it becomes a giant mouth that eats itself, chewing and swallowing in a loop, ending on 117 made of glazed donuts with sprinkles, in an open pink box",
+    "source_sha256":  "72157dc561df59390a19ff8bac99965f455e95969376b4dbb8dd2f7cae3775fa",
+    "final_sha256":  "8dfc42d55b1a8fdf615984ef342cd448e1a1ba965a8170f8ed7446cf67562776",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  19.4,
+    "size_bytes":  31384501,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -16.5,
+                     "max_volume_db":  -3.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
