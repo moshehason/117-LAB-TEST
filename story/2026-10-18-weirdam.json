@@ -1,0 +1,21 @@
+{
+    "asset_id":  "story-2026-10-18-weirdam",
+    "concept":  "Weird 117 film: Swamp comes alive (the artwork grows a wet mouth full of human teeth that slowly opens and starts chewing), then everything turns into wobbling green jelly that shakes and splits, it becomes a surgeon in a white mask who opens the material like a patient on a table, ending on 117 made of shiny wet spaghetti in tomato sauce, on a checkered tablecloth",
+    "source_sha256":  "754445585a68baaab06def1436a4f99beb8285d42e29bb647ec1d092658157b0",
+    "final_sha256":  "6a589bbec74de5e7d41a5d426d91906db805d06800d855a8083421bf0d496cf7",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  19.4,
+    "size_bytes":  31327527,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original synthesized sound bed generated locally with ffmpeg (noise, drones, blips); no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -16.4,
+                     "max_volume_db":  -4.5,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
