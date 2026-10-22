@@ -1,0 +1,21 @@
+{
+    "asset_id":  "2026-10-22-signal117",
+    "concept":  "117 - weak signal from space: the number flickers like a lost radio transmission, old film, no reception, Aphex Twin style distortion",
+    "source_sha256":  "14e46157ca841ba4cb5038e418934aa65b9046cf1e7cbae6151a8f95c3637a20",
+    "final_sha256":  "b2f4ed1d040447d27324beae156e772ab298db3f04fa3286afda7953bbbf336a",
+    "width":  1080,
+    "height":  1920,
+    "fps":  30,
+    "duration_s":  6.65,
+    "size_bytes":  36659905,
+    "video_codec":  "h264 High yuv420p",
+    "audio_codec":  "aac LC 48kHz stereo 192k",
+    "audio_source":  "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+    "audio_license":  "original work, no license restrictions",
+    "loudness":  {
+                     "mean_volume_db":  -15.5,
+                     "max_volume_db":  -5.6,
+                     "target":  "loudnorm I=-16 TP=-1.5"
+                 },
+    "publication_state":  "READY_NOT_POSTED"
+}
