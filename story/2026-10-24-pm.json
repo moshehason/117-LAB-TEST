@@ -1,0 +1,21 @@
+{
+  "asset_id": "crayon117",
+  "concept": "one-eyed furry creature on crayon legs",
+  "source_sha256": "a366f5a93383c8335b8aa3fcaca41fe35010cbde08a116d534cd516dc29eccfe",
+  "final_sha256": "8ad97956400aeea61d088d11918f613c0ec84a209ee6691ceb44e6ed36f907b9",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "duration_s": 6.04,
+  "size_bytes": 38334422,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.4,
+    "max_volume_db": -6.1,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
