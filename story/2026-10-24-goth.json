@@ -1,0 +1,21 @@
+{
+  "asset_id": "goth117",
+  "concept": "goth performer walks to camera",
+  "source_sha256": "98029ea667df28690d1827230a610f1ed2d90ede7761856c23e738913544ad1a",
+  "final_sha256": "e186a26d4393a86d62a19c8ab0c1a26c8111a5e1a94dbe12a49a17c90c9e26e7",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "duration_s": 6.04,
+  "size_bytes": 39895766,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -14.9,
+    "max_volume_db": -3.4,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
