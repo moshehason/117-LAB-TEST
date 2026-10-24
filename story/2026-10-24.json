@@ -1,0 +1,21 @@
+{
+  "asset_id": "gum117",
+  "concept": "bubblegum creature inside a bubble",
+  "source_sha256": "013029f57d4c48a0d7f5220081130a1ffbd713102039ed69ec0cef2ffff66a19",
+  "final_sha256": "fff4ed345590db356908fc95f6d97dd3877e6918c42b6948135029452137bfaf",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "duration_s": 6.04,
+  "size_bytes": 39277960,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -17.1,
+    "max_volume_db": -7.6,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
