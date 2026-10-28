@@ -1,0 +1,21 @@
+{
+  "asset_id": "holy1028a",
+  "concept": "1978 VHS ritual in the language of The Holy Mountain: crimson monks kneel around a bleeding flesh blob on a gold altar, white doves burst from the wound, 117 in blood on the temple wall",
+  "source_sha256": "410aaf82b6213c0e3b6a850eea570bdd79f3763ba9369f359b85c8dabd627ed5",
+  "final_sha256": "2c1c00a11f1b4ba1ecfe9160bee1f269c31d7d804530a29c81fbe92944ccfad6",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.12,
+  "size_bytes": 36347062,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.3,
+    "max_volume_db": -4.8,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
