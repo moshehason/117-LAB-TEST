@@ -1,0 +1,21 @@
+{
+  "asset_id": "holy1028b",
+  "concept": "1978 VHS ritual in the language of The Holy Mountain: nine women in white kneel in symmetry before a faceless heart of raw flesh in a white cave, liquid gold runs down the altar steps; the painted 117 sits mostly above frame (its three blood drips hang at the top), so 117 is NOT fully readable in this one",
+  "source_sha256": "6de10b8d4e2a2e715de230080b631b09ca23a0bfbebe4a864254b2637abb7429",
+  "final_sha256": "5cbf8f9a6253d1b41700265470d91ba3b9226ee26fd5398e69e29fc93e0c725d",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.12,
+  "size_bytes": 36153077,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.2,
+    "max_volume_db": -4.7,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
