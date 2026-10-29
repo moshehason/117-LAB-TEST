@@ -1,0 +1,21 @@
+{
+  "asset_id": "cctvblob1029",
+  "concept": "Viewed through the camera: a phone films a bar's CCTV monitor; the men posing for the camera glitch out and come back fused into one breathing blob of bodies (Moshe's idea, 2026-10-29). Modest 117 = the camera ID 'CAM 117' in the on-screen display",
+  "source_sha256": "a9b6581bb540e6080e290c225ecf0df54b27d7e363f4eec7a4854d535fd29ceb",
+  "final_sha256": "d58e78a6a926f17d1992c829ddf020c092cff53c969524e3ceff9bbe7bc5f5ca",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.52,
+  "size_bytes": 25611707,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -16.3,
+    "max_volume_db": -4.4,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
