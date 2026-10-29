@@ -1,0 +1,21 @@
+{
+  "asset_id": "holy1029b",
+  "concept": "1978 VHS ritual in the language of The Holy Mountain: a raw flesh mass on a white stone altar swallows a white rose while dark blood runs down the stone; a large full 117 in dripping blood on the bare white wall above, centred inside the Story safe area",
+  "source_sha256": "16433213b886ee814086f0d8d6a52051c12b9d18298b316dd7f77d9fa2d53817",
+  "final_sha256": "287f5466f3a047e7cfa8279e2d50ccab4ea882ec45e755ca016d4c13e7ffbda0",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.12,
+  "size_bytes": 35491487,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.2,
+    "max_volume_db": -4.7,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
