@@ -1,0 +1,21 @@
+{
+  "asset_id": "muppets1029",
+  "concept": "Bizarre: Sesame-Street-style puppets melt like wax under sun rays and a blinding rainbow until the frame whites out (Moshe's idea, 2026-10-29); small 117 on the wall melts with them",
+  "source_sha256": "a41e380e13c772743f5ff58dff073902f9331eb8e42c81b0d53ec2dc3d868ba5",
+  "final_sha256": "021b73a95e479704b3e66e62cd640c162a89a94b5f0d14dfeda256e5c30e3c63",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.0,
+  "size_bytes": 37403448,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.2,
+    "max_volume_db": -4.7,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
