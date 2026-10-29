@@ -1,0 +1,21 @@
+{
+  "asset_id": "holy1029a",
+  "concept": "1978 VHS ritual in the language of The Holy Mountain: hooded figures kneel on white steps before a bleeding flesh mass on a gold altar; a large full 117 in dripping blood on the bare white wall, centred inside the Story safe area",
+  "source_sha256": "f2900ca3e97b5856bc906299ab984b5567415ed3d69f8d15dec76f40280343ff",
+  "final_sha256": "977a73d2c568fa6a5f4bd1eac07cce4b49e37f1360c450941ce47fa4e1c33c4f",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.12,
+  "size_bytes": 35222020,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.2,
+    "max_volume_db": -4.7,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
