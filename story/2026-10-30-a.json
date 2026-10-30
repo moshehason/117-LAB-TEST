@@ -1,0 +1,21 @@
+{
+  "asset_id": "holy1030a",
+  "concept": "1978 VHS ritual in the language of The Holy Mountain: three crimson-hooded figures kneel on white steps before a long altar of raw meat and gold wax with candles sinking into it, white smoke rising; a small 117 in dripping blood on the bare white wall, off the smoke's axis, inside the Story safe area",
+  "source_sha256": "e1e0c0e803c9ecf7effe3ea9983ec0621f25a9ff413bf3a253d331358501620d",
+  "final_sha256": "a7f7abc200ab1d4a06ccd1d4d1d48d7f6d11b2d831187287f269977866c48ada",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.12,
+  "size_bytes": 36218705,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.2,
+    "max_volume_db": -4.7,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
