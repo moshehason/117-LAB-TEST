@@ -1,0 +1,21 @@
+{
+  "asset_id": "holy1029f",
+  "concept": "1978 VHS ritual in the language of The Holy Mountain: in a bone-white chapel, a bald alchemist in a white robe kneels with his back to the camera before a golden altar where two blobs of raw flesh slowly melt into each other and tear apart, a thread of blood falling from the ceiling lamp; a 117 in dripping blood on the bare wall",
+  "source_sha256": "eb076acb7b8479286b56b4d33df870fb1c47358a3cd8f1460495dfaccc4a168d",
+  "final_sha256": "fabe1d52f18aac7625fedd418f5f73a8e9212dac78c1f151dc3af259439e3f9a",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.12,
+  "size_bytes": 35939785,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.2,
+    "max_volume_db": -4.7,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
