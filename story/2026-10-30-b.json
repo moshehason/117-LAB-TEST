@@ -1,0 +1,21 @@
+{
+  "asset_id": "holy1030b",
+  "concept": "1978 VHS ritual in the language of The Holy Mountain: in a white temple, a blob of raw flesh with many long thin arms splits open like a spiked red flower on a white altar and a white dove sits in its wound, blood running down the stone; hooded figures kneel on the white steps with their backs to us; a small 117 in dripping blood on the bare wall",
+  "source_sha256": "17f64845da68cac63f9717185d03857d1cfa3e8f61ec635f8102c64109ef7dae",
+  "final_sha256": "10fe9e70c4e87a412ad144479f6c78644a397be47947dd4358e977c226aeccc0",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.12,
+  "size_bytes": 36172923,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.2,
+    "max_volume_db": -4.7,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
