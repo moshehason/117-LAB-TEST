@@ -1,0 +1,21 @@
+{
+  "asset_id": "tag117_1031",
+  "concept": "Szatnia A / 117: two figures checked into a white cloakroom, each wearing the real 117 cloakroom tag; inspired by ivsnl's still full-length figures; tag tracked in post from Moshe's photo (tag only)",
+  "source_sha256": "dd05f229dff9e4c7abfda2f25930960ce05379656421b87a1893ab8b7e5924b1",
+  "final_sha256": "e01a681d1158414586d84f314c4bc23e538b3a94645f1741544740cc0a4fb839",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 20.4,
+  "size_bytes": 8911473,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -16.7,
+    "max_volume_db": -1.9,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
