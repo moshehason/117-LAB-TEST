@@ -1,0 +1,21 @@
+{
+  "asset_id": "holy1104a",
+  "concept": "Argento's Suspiria gels meet The Holy Mountain: in a cracked salt desert a translucent jelly blob with dark organs stretches to the sky and bleeds liquid gold rivers; hooded figures stand around it. 117 painted in post (mark117.py); scene Wan 2.2",
+  "source_sha256": "442bd1f291fda927a78bc042173d1691cc22eee3ab1957cb9cd0b75cf763d90d",
+  "final_sha256": "5e1e0d4087b71d98ae5cc3f29ac7349ed05cc6504d6eddde3f59b749a1373353",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.12,
+  "size_bytes": 35385471,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.2,
+    "max_volume_db": -4.6,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
