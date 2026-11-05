@@ -1,0 +1,21 @@
+{
+  "asset_id": "holy1105b",
+  "concept": "A white temple lit in crimson and cobalt: a blob of coiled soft tubes turns itself inside out on a black altar and births a smaller blob into a shaft of light, two hooded gold-robed figures kneel with their backs to the camera; 117 painted in post (mark117.py); scene Wan 2.2",
+  "source_sha256": "e92ea74aa1df1931e773a29a752f09c1da94dee385faf3700a05e616f72140de",
+  "final_sha256": "7ac0f8600dcd909cbb5f16dc5743372a6fc5b5dea71aee95e953a1913a738a48",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.12,
+  "size_bytes": 35566579,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.2,
+    "max_volume_db": -4.7,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
