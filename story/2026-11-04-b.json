@@ -1,0 +1,21 @@
+{
+  "asset_id": "holy1104b",
+  "concept": "A white temple: a grey-pink blob of coiled soft flesh turns itself inside out on a black altar while thick red wax drips down, five hooded cobalt figures kneel with their backs to the camera; 117 painted in post (mark117.py); scene Wan 2.2",
+  "source_sha256": "81b146cf56c77679788716fe2f6e83be0d464c2f6f87f32211fe4f150855bb6d",
+  "final_sha256": "bc816cb4c1458b8fb2f9fa41f4348d2c6d6c4df123ed0f7f44a2035c79f97c0d",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.12,
+  "size_bytes": 35338611,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.2,
+    "max_volume_db": -4.7,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
