@@ -1,0 +1,21 @@
+{
+  "asset_id": "holy1105a",
+  "concept": "Crimson monks in an alchemist's tower kneel around a red jelly blob bound in gold thread; white doves burst from it. 117 painted in post (mark117.py); scene Wan 2.2",
+  "source_sha256": "b876fb66a6f661a2810f356f40bac91ca4c26c7f4cf4a96083411783e82bfbe7",
+  "final_sha256": "985469426876c833e1822372c8c3a1332ce30bb747e1fa0febd1a5c62da753ec",
+  "width": 1080,
+  "height": 1920,
+  "fps": 24,
+  "duration_s": 12.12,
+  "size_bytes": 35416541,
+  "video_codec": "h264 High yuv420p",
+  "audio_codec": "aac LC 48kHz stereo 192k",
+  "audio_source": "original sound made locally: synthesized organ, bells and noise with Windows text-to-speech voices; no third-party audio",
+  "audio_license": "original work, no license restrictions",
+  "loudness": {
+    "mean_volume_db": -15.2,
+    "max_volume_db": -4.7,
+    "target": "loudnorm I=-16 TP=-1.5"
+  },
+  "publication_state": "READY_NOT_POSTED"
+}
